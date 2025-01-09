@@ -1,0 +1,27 @@
+-- Tabla de Clientes
+CREATE TABLE Clientes (
+    CedulaRUC TEXT PRIMARY KEY,
+    NombreRazonSocial TEXT NOT NULL,
+    Direccion TEXT,
+    Ciudad TEXT,
+    Telefono TEXT,
+    CorreoElectronico TEXT
+);
+
+-- Tabla de IngresosEgresos
+CREATE TABLE IngresosEgresos (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Fecha TEXT NOT NULL,
+    Concepto TEXT NOT NULL,
+    Ingresos REAL DEFAULT 0,
+    Egresos REAL DEFAULT 0,
+    Saldo REAL
+);
+
+-- Tabla de Inventario
+CREATE TABLE Inventario (
+    CodigoArticulo TEXT PRIMARY KEY,
+    Entradas INTEGER DEFAULT 0,
+    Salidas INTEGER DEFAULT 0,
+    Stock INTEGER DEFAULT 0
+);
