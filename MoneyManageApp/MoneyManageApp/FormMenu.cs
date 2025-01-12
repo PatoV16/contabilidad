@@ -1,5 +1,5 @@
-﻿using MoneyManageApp.MoneyManageApp;
-using System;
+﻿using System;
+using System.Drawing;
 using System.Data.SQLite;
 using System.Windows.Forms;
 
@@ -9,10 +9,17 @@ namespace MoneyManageApp
     {
         private Label lblTitulo;
         private string nombreNegocio;
+        private Panel mainContainer;
+        private FlowLayoutPanel buttonContainer;
+
+        // Colores modernos
+        private Color primaryColor = Color.FromArgb(52, 152, 219);  // Azul moderno
+        private Color secondaryColor = Color.FromArgb(245, 247, 250);  // Gris muy claro
+        private Color buttonHoverColor = Color.FromArgb(41, 128, 185);  // Azul oscuro
+        private Color textColor = Color.FromArgb(52, 73, 94);  // Gris oscuro
 
         public FormMenu()
         {
-            // Cargar el nombre del negocio guardado o usar el valor por defecto
             CargarNombreNegocio();
             InitializeComponent();
         }
@@ -64,69 +71,133 @@ namespace MoneyManageApp
         private void InitializeComponent()
         {
             this.Text = $"Menú Principal - {nombreNegocio}";
-            this.Size = new System.Drawing.Size(800, 600);
+            this.Size = new System.Drawing.Size(1000, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.BackColor = System.Drawing.Color.LightBlue;
+            this.BackColor = secondaryColor;
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
 
-            // Crear etiqueta para el título
-            lblTitulo = new Label();
-            lblTitulo.Text = nombreNegocio;
-            lblTitulo.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
-            lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            lblTitulo.Dock = DockStyle.Top;
-            lblTitulo.Height = 60;
+            // Panel principal con sombra
+            mainContainer = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(20),
+                BackColor = Color.White
+            };
+
+            // Contenedor del título
+            Panel headerPanel = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 100,
+                BackColor = Color.White
+            };
+
+            // Título principal
+            lblTitulo = new Label
+            {
+                Text = nombreNegocio,
+                Font = new Font("Segoe UI", 24, FontStyle.Bold),
+                ForeColor = primaryColor,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Dock = DockStyle.Fill,
+                Padding = new Padding(0, 10, 0, 0)
+            };
             lblTitulo.Click += LblTitulo_Click;
-            this.Controls.Add(lblTitulo);
 
-            // Botón para editar nombre (opcional - puedes usar solo el click en el título)
-            Button btnEditarNombre = new Button();
-            btnEditarNombre.Text = "Editar Nombre";
-            btnEditarNombre.Font = new System.Drawing.Font("Segoe UI", 9F);
-            btnEditarNombre.Size = new System.Drawing.Size(100, 30);
-            btnEditarNombre.Location = new System.Drawing.Point(680, 15);
+            // Botón de editar
+            Button btnEditarNombre = CreateStyledButton("✎ Editar", 100, 30);
+            btnEditarNombre.Location = new Point(headerPanel.Width - 120, 20);
             btnEditarNombre.Click += LblTitulo_Click;
-            this.Controls.Add(btnEditarNombre);
+            btnEditarNombre.Font = new Font("Segoe UI", 9f);
 
-            // Resto de los botones...
-            Button btnIngresosEgresos = new Button();
-            btnIngresosEgresos.Text = "Control de Ingresos y Egresos";
-            btnIngresosEgresos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            btnIngresosEgresos.Size = new System.Drawing.Size(250, 50);
-            btnIngresosEgresos.Location = new System.Drawing.Point(275, 150);
-            btnIngresosEgresos.Click += BtnIngresosEgresos_Click;
-            this.Controls.Add(btnIngresosEgresos);
+            headerPanel.Controls.Add(lblTitulo);
+            headerPanel.Controls.Add(btnEditarNombre);
 
-            Button btnCuentasPorCobrar = new Button();
-            btnCuentasPorCobrar.Text = "Control de Cuentas por Cobrar";
-            btnCuentasPorCobrar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            btnCuentasPorCobrar.Size = new System.Drawing.Size(250, 50);
-            btnCuentasPorCobrar.Location = new System.Drawing.Point(275, 220);
-            btnCuentasPorCobrar.Click += BtnCuentasPorCobrar_Click;
-            this.Controls.Add(btnCuentasPorCobrar);
+            // Contenedor de botones
+            buttonContainer = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                FlowDirection = FlowDirection.LeftToRight,
+                WrapContents = true,
+                AutoScroll = true,
+                Padding = new Padding(20),
+                BackColor = Color.White
+            };
 
-            Button btnInventario = new Button();
-            btnInventario.Text = "Control de Inventario";
-            btnInventario.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            btnInventario.Size = new System.Drawing.Size(250, 50);
-            btnInventario.Location = new System.Drawing.Point(275, 290);
-            btnInventario.Click += BtnInventario_Click;
-            this.Controls.Add(btnInventario);
+            // Crear botones del menú
+            var btnIngresosEgresos = CreateMenuButton("💰 Control de\nIngresos y Egresos", BtnIngresosEgresos_Click);
+            var btnCuentasPorCobrar = CreateMenuButton("📊 Control de\nCuentas por Cobrar", BtnCuentasPorCobrar_Click);
+            var btnInventario = CreateMenuButton("📦 Control de\nInventario", BtnInventario_Click);
+            var btnRegistroClientes = CreateMenuButton("👥 Registro de\nClientes", BtnRegistroClientes_Click);
+            var btnCitas = CreateMenuButton("📅 Control de\nCitas", BtnCitas_Click);
+            var btnBorrarBD = CreateMenuButton("🗑️ Borrar Base\nde Datos", BtnBorrarBD_Click);
 
-            Button btnRegistroClientes = new Button();
-            btnRegistroClientes.Text = "Registro de Clientes";
-            btnRegistroClientes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            btnRegistroClientes.Size = new System.Drawing.Size(250, 50);
-            btnRegistroClientes.Location = new System.Drawing.Point(275, 360);
-            btnRegistroClientes.Click += BtnRegistroClientes_Click;
-            this.Controls.Add(btnRegistroClientes);
+            buttonContainer.Controls.AddRange(new Control[] {
+                btnIngresosEgresos, btnCuentasPorCobrar, btnInventario,
+                btnRegistroClientes, btnCitas, btnBorrarBD
+            });
 
-            Button btnBorrarBD = new Button();
-            btnBorrarBD.Text = "Borrar Base de Datos";
-            btnBorrarBD.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
-            btnBorrarBD.Size = new System.Drawing.Size(250, 50);
-            btnBorrarBD.Location = new System.Drawing.Point(275, 430);
-            btnBorrarBD.Click += BtnBorrarBD_Click;
-            this.Controls.Add(btnBorrarBD);
+            mainContainer.Controls.Add(buttonContainer);
+            mainContainer.Controls.Add(headerPanel);
+            this.Controls.Add(mainContainer);
+        }
+
+        private Button CreateMenuButton(string text, EventHandler clickHandler)
+        {
+            Button btn = new Button
+            {
+                Text = text,
+                Size = new Size(200, 100),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = primaryColor,
+                ForeColor = Color.White,
+                Margin = new Padding(10),
+                TextAlign = ContentAlignment.MiddleCenter,
+                UseVisualStyleBackColor = true
+            };
+
+            btn.FlatAppearance.BorderSize = 0;
+            btn.Click += clickHandler;
+
+            // Eventos para efectos hover
+            btn.MouseEnter += (s, e) => {
+                btn.BackColor = buttonHoverColor;
+                btn.Cursor = Cursors.Hand;
+            };
+            btn.MouseLeave += (s, e) => {
+                btn.BackColor = primaryColor;
+            };
+
+            return btn;
+        }
+
+        private Button CreateStyledButton(string text, int width, int height)
+        {
+            Button btn = new Button
+            {
+                Text = text,
+                Size = new Size(width, height),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.Transparent,
+                ForeColor = primaryColor,
+                Cursor = Cursors.Hand
+            };
+
+            btn.FlatAppearance.BorderColor = primaryColor;
+            btn.FlatAppearance.BorderSize = 1;
+
+            btn.MouseEnter += (s, e) => {
+                btn.BackColor = primaryColor;
+                btn.ForeColor = Color.White;
+            };
+            btn.MouseLeave += (s, e) => {
+                btn.BackColor = Color.Transparent;
+                btn.ForeColor = primaryColor;
+            };
+
+            return btn;
         }
 
         private void LblTitulo_Click(object sender, EventArgs e)
@@ -139,25 +210,25 @@ namespace MoneyManageApp
                 inputForm.FormBorderStyle = FormBorderStyle.FixedDialog;
                 inputForm.MaximizeBox = false;
                 inputForm.MinimizeBox = false;
+                inputForm.BackColor = Color.White;
 
-                TextBox txtNombre = new TextBox();
-                txtNombre.Location = new System.Drawing.Point(20, 20);
-                txtNombre.Size = new System.Drawing.Size(340, 25);
-                txtNombre.Text = nombreNegocio;
-                inputForm.Controls.Add(txtNombre);
+                TextBox txtNombre = new TextBox
+                {
+                    Location = new Point(20, 20),
+                    Size = new Size(340, 25),
+                    Text = nombreNegocio,
+                    Font = new Font("Segoe UI", 10)
+                };
 
-                Button btnGuardar = new Button();
-                btnGuardar.Text = "Guardar";
+                Button btnGuardar = CreateStyledButton("Guardar", 80, 30);
                 btnGuardar.DialogResult = DialogResult.OK;
-                btnGuardar.Location = new System.Drawing.Point(285, 60);
-                inputForm.Controls.Add(btnGuardar);
+                btnGuardar.Location = new Point(280, 60);
 
-                Button btnCancelar = new Button();
-                btnCancelar.Text = "Cancelar";
+                Button btnCancelar = CreateStyledButton("Cancelar", 80, 30);
                 btnCancelar.DialogResult = DialogResult.Cancel;
-                btnCancelar.Location = new System.Drawing.Point(190, 60);
-                inputForm.Controls.Add(btnCancelar);
+                btnCancelar.Location = new Point(190, 60);
 
+                inputForm.Controls.AddRange(new Control[] { txtNombre, btnGuardar, btnCancelar });
                 inputForm.AcceptButton = btnGuardar;
                 inputForm.CancelButton = btnCancelar;
 
@@ -171,7 +242,6 @@ namespace MoneyManageApp
             }
         }
 
-        // Mantener el resto de los métodos existentes...
         private void BtnIngresosEgresos_Click(object sender, EventArgs e)
         {
             FormIngresosEgresos form = new FormIngresosEgresos();
@@ -196,9 +266,22 @@ namespace MoneyManageApp
             form.ShowDialog();
         }
 
+        private void BtnCitas_Click(object sender, EventArgs e)
+        {
+            FormCitas form = new FormCitas();
+            form.ShowDialog();
+
+        }
+
         private void BtnBorrarBD_Click(object sender, EventArgs e)
         {
-            var result = MessageBox.Show("¿Estás seguro de que deseas borrar todos los registros?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            var result = MessageBox.Show(
+                "¿Estás seguro de que deseas borrar todos los registros?\nEsta acción no se puede deshacer.",
+                "Confirmación",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
             if (result == DialogResult.Yes)
             {
                 try
@@ -206,15 +289,32 @@ namespace MoneyManageApp
                     using (SQLiteConnection conn = Database.GetConnection())
                     {
                         conn.Open();
-                        string queryBorrar = "DELETE FROM IngresosEgresos; DELETE FROM CuentasPorCobrar; DELETE FROM Inventario; DELETE FROM Clientes; DELETE FROM Productos; DELETE FROM Entradas; DELETE FROM Salidas; DELETE FROM RecaudosDiarios;";
+                        string queryBorrar = @"
+                            DELETE FROM IngresosEgresos; 
+                            DELETE FROM CuentasPorCobrar; 
+                            DELETE FROM Clientes; 
+                            DELETE FROM Productos; 
+                            DELETE FROM Entradas; 
+                            DELETE FROM Salidas; 
+                            DELETE FROM RecaudosDiarios;";
                         SQLiteCommand cmd = new SQLiteCommand(queryBorrar, conn);
                         cmd.ExecuteNonQuery();
-                        MessageBox.Show("Los registros han sido borrados exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show(
+                            "Los registros han sido borrados exitosamente.",
+                            "Éxito",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information
+                        );
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error al borrar los registros: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        "Error al borrar los registros: " + ex.Message,
+                        "Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error
+                    );
                 }
             }
         }

@@ -12,6 +12,8 @@ internal class FormRegistroClientes : Form
     private Button btnAgregarCliente;
     private Button btnEditarCliente;
     private Button btnEliminarCliente;
+    private TextBox txtBuscar;
+    private ComboBox cmbCriterioBusqueda;
 
     public FormRegistroClientes()
     {
@@ -24,54 +26,128 @@ internal class FormRegistroClientes : Form
         this.Text = "Registro de Clientes";
         this.Size = new System.Drawing.Size(800, 600);
         this.StartPosition = FormStartPosition.CenterScreen;
+        this.BackColor = Color.WhiteSmoke;
 
+        // Título
         lblTitulo = new Label
         {
             Text = "Registro de Clientes",
-            Font = new System.Drawing.Font("Segoe UI", 18, System.Drawing.FontStyle.Bold),
+            Font = new Font("Segoe UI", 18, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter,
             Dock = DockStyle.Top,
-            Height = 50
+            Height = 50,
+            ForeColor = Color.FromArgb(64, 64, 64)
         };
 
+        // Panel de búsqueda
+        Panel searchPanel = new Panel
+        {
+            Height = 60,
+            Dock = DockStyle.Top,
+            Padding = new Padding(10),
+            BackColor = Color.White
+        };
+
+        // ComboBox para criterio de búsqueda
+        cmbCriterioBusqueda = new ComboBox
+        {
+            Width = 150,
+            Location = new Point(10, 15),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            FlatStyle = FlatStyle.Flat,
+            Font = new Font("Segoe UI", 9.5f)
+        };
+        cmbCriterioBusqueda.Items.AddRange(new string[] {
+            "Cédula/RUC",
+            "Nombre/Razón Social",
+            "Ciudad",
+            "Teléfono"
+        });
+        cmbCriterioBusqueda.SelectedIndex = 0;
+
+        // TextBox de búsqueda
+        txtBuscar = new TextBox
+        {
+            Width = 300,
+            Location = new Point(170, 15),
+            Font = new Font("Segoe UI", 9.5f),
+            BorderStyle = BorderStyle.FixedSingle
+        };
+        txtBuscar.TextChanged += TxtBuscar_TextChanged;
+
+        searchPanel.Controls.AddRange(new Control[] { cmbCriterioBusqueda, txtBuscar });
+
+        // DataGridView
         dgvClientes = new DataGridView
         {
             Dock = DockStyle.Fill,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
             AllowUserToAddRows = false,
-            SelectionMode = DataGridViewSelectionMode.FullRowSelect,  // Agregar esto
-            MultiSelect = false,                                      // Y esto
-            ReadOnly = true                                          // Y esto
+            SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+            MultiSelect = false,
+            ReadOnly = true,
+            BackgroundColor = Color.White,
+            BorderStyle = BorderStyle.None,
+            RowHeadersVisible = false,
+            AllowUserToResizeRows = false
         };
 
+        // Estilo del DataGridView
+        dgvClientes.DefaultCellStyle.Font = new Font("Segoe UI", 9);
+        dgvClientes.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9, FontStyle.Bold);
+        dgvClientes.EnableHeadersVisualStyles = false;
+        dgvClientes.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
+        dgvClientes.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(64, 64, 64);
+        dgvClientes.ColumnHeadersHeight = 32;
+
+        // Panel de botones
         Panel buttonPanel = new Panel
         {
-            Height = 50,
-            Dock = DockStyle.Bottom
+            Height = 60,
+            Dock = DockStyle.Bottom,
+            Padding = new Padding(10),
+            BackColor = Color.White
         };
+
+        // Estilo común para botones
+        var buttonStyle = new Action<Button>((btn) => {
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.Font = new Font("Segoe UI", 9);
+            btn.Height = 35;
+            btn.Cursor = Cursors.Hand;
+        });
 
         btnAgregarCliente = new Button
         {
             Text = "Agregar Cliente",
             Width = 120,
-            Location = new Point(10, 10)
+            Location = new Point(10, 12),
+            BackColor = Color.FromArgb(0, 122, 204),
+            ForeColor = Color.White
         };
+        buttonStyle(btnAgregarCliente);
         btnAgregarCliente.Click += BtnAgregarCliente_Click;
 
         btnEditarCliente = new Button
         {
             Text = "Editar Cliente",
             Width = 120,
-            Location = new Point(140, 10)
+            Location = new Point(140, 12),
+            BackColor = Color.White,
+            ForeColor = Color.FromArgb(0, 122, 204)
         };
+        buttonStyle(btnEditarCliente);
         btnEditarCliente.Click += BtnEditarCliente_Click;
 
         btnEliminarCliente = new Button
         {
             Text = "Eliminar Cliente",
             Width = 120,
-            Location = new Point(270, 10)
+            Location = new Point(270, 12),
+            BackColor = Color.White,
+            ForeColor = Color.FromArgb(0, 122, 204)
         };
+        buttonStyle(btnEliminarCliente);
         btnEliminarCliente.Click += BtnEliminarCliente_Click;
 
         buttonPanel.Controls.AddRange(new Control[] {
@@ -80,16 +156,76 @@ internal class FormRegistroClientes : Form
             btnEliminarCliente
         });
 
+        // Panel principal
         Panel mainPanel = new Panel
         {
             Dock = DockStyle.Fill,
-            Padding = new Padding(10)
+            Padding = new Padding(10),
+            BackColor = Color.White
         };
         mainPanel.Controls.Add(dgvClientes);
 
+        // Agregar controles al formulario
         this.Controls.Add(mainPanel);
         this.Controls.Add(buttonPanel);
+        this.Controls.Add(searchPanel);
         this.Controls.Add(lblTitulo);
+    }
+
+    private void TxtBuscar_TextChanged(object sender, EventArgs e)
+    {
+        try
+        {
+            string searchText = txtBuscar.Text.Trim();
+            string searchCriteria = cmbCriterioBusqueda.SelectedItem.ToString();
+
+            string columnName;
+
+            if (searchCriteria == "Cédula/RUC")
+            {
+                columnName = "CedulaRuc";
+            }
+            else if (searchCriteria == "Nombre/Razón Social")
+            {
+                columnName = "NombreRazonSocial";
+            }
+            else if (searchCriteria == "Ciudad")
+            {
+                columnName = "Ciudad";
+            }
+            else if (searchCriteria == "Teléfono")
+            {
+                columnName = "Telefono";
+            }
+            else
+            {
+                columnName = "NombreRazonSocial";
+            }
+
+
+            using (SQLiteConnection conn = Database.GetConnection())
+            {
+                conn.Open();
+                string query = $@"
+                    SELECT CedulaRuc, NombreRazonSocial, Direccion, Ciudad, Telefono, CorreoElectronico 
+                    FROM Clientes 
+                    WHERE {columnName} LIKE @SearchTerm
+                ";
+
+                using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@SearchTerm", $"%{searchText}%");
+                    SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+                    dgvClientes.DataSource = dt;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error al buscar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private void BtnAgregarCliente_Click(object sender, EventArgs e)

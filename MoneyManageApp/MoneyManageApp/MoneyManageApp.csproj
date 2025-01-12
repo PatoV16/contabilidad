@@ -103,6 +103,9 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormAgregarcCita.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FormAgregarCliente.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +128,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormAgregarSalida.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCitas.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FormCuentasPorCobrar.cs">

@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Data.SQLite;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace MoneyManageApp
 {
     public partial class FormAgregarCuentaPorCobrar : Form
     {
+        // Field declarations
+        private ComboBox cmbCliente;
+        private TextBox txtArticulo;
+        private TextBox txtValorCredito;
+        private DateTimePicker dtpFechaInicial;
+        private TextBox txtSaldoCuenta;
+        private DateTimePicker dtpFechaFinal;
+        private ComboBox cmbEstado;
+
         public FormAgregarCuentaPorCobrar()
         {
             InitializeComponent();
@@ -13,61 +23,172 @@ namespace MoneyManageApp
 
         private void InitializeComponent()
         {
+            // Form configuration
             this.Text = "Agregar Cuenta por Cobrar";
-            this.Size = new System.Drawing.Size(400, 350); // Aumentar el tamaño para ajustar todos los controles
+            this.Size = new System.Drawing.Size(550, 520);
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.BackColor = Color.WhiteSmoke;
+            this.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+            this.Padding = new Padding(20);
 
-            // Campos de texto
-            Label lblCliente = new Label { Text = "Cliente", Location = new System.Drawing.Point(20, 20) };
-            ComboBox cmbCliente = new ComboBox { Location = new System.Drawing.Point(100, 20), Width = 250 };
+            // Create main panel
+            Panel mainPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.White,
+                Padding = new Padding(20),
+            };
 
-            Label lblArticulo = new Label { Text = "Artículo", Location = new System.Drawing.Point(20, 60) };
-            TextBox txtArticulo = new TextBox { Location = new System.Drawing.Point(100, 60), Width = 250 };
+            // Style definitions
+            var labelStyle = new Action<Label>((label) => {
+                label.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
+                label.ForeColor = Color.FromArgb(64, 64, 64);
+                label.AutoSize = true;
+            });
 
-            Label lblValorCredito = new Label { Text = "Valor Crédito", Location = new System.Drawing.Point(20, 100) };
-            TextBox txtValorCredito = new TextBox { Location = new System.Drawing.Point(100, 100), Width = 250 };
+            var inputStyle = new Action<Control>((control) => {
+                control.Font = new Font("Segoe UI", 9.5F, FontStyle.Regular);
+                control.Height = 30;
+            });
 
-            Label lblFechaInicial = new Label { Text = "Fecha Inicial", Location = new System.Drawing.Point(20, 140) };
-            DateTimePicker dtpFechaInicial = new DateTimePicker { Location = new System.Drawing.Point(100, 140), Width = 250 };
+            int yPos = 10;
+            int spacing = 65;
 
-            Label lblSaldoCuenta = new Label { Text = "Saldo Cuenta", Location = new System.Drawing.Point(20, 180) };
-            TextBox txtSaldoCuenta = new TextBox { Location = new System.Drawing.Point(100, 180), Width = 250 };
+            // Cliente
+            Label lblCliente = new Label { Text = "Cliente", Location = new Point(0, yPos) };
+            labelStyle(lblCliente);
 
-            Label lblFechaFinal = new Label { Text = "Fecha Final", Location = new System.Drawing.Point(20, 220) };
-            DateTimePicker dtpFechaFinal = new DateTimePicker { Location = new System.Drawing.Point(100, 220), Width = 250 };
+            cmbCliente = new ComboBox
+            {
+                Location = new Point(0, yPos + 25),
+                Width = mainPanel.Width - 40,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                FlatStyle = FlatStyle.Flat
+            };
+            inputStyle(cmbCliente);
 
-            Label lblEstado = new Label { Text = "Estado", Location = new System.Drawing.Point(20, 260) };
-            ComboBox cmbEstado = new ComboBox { Location = new System.Drawing.Point(100, 260), Width = 250 };
-            cmbEstado.Items.Add("Pendiente");
-            cmbEstado.Items.Add("Pagada");
+            // Artículo
+            yPos += spacing;
+            Label lblArticulo = new Label { Text = "Artículo", Location = new Point(0, yPos) };
+            labelStyle(lblArticulo);
 
-            // Botón para agregar cuenta
+            txtArticulo = new TextBox
+            {
+                Location = new Point(0, yPos + 25),
+                Width = mainPanel.Width - 40,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            inputStyle(txtArticulo);
+
+            // Valor Crédito
+            yPos += spacing;
+            Label lblValorCredito = new Label { Text = "Valor Crédito", Location = new Point(0, yPos) };
+            labelStyle(lblValorCredito);
+
+            txtValorCredito = new TextBox
+            {
+                Location = new Point(0, yPos + 25),
+                Width = mainPanel.Width - 40,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            inputStyle(txtValorCredito);
+
+            // Fecha Inicial
+            yPos += spacing;
+            Label lblFechaInicial = new Label { Text = "Fecha Inicial", Location = new Point(0, yPos) };
+            labelStyle(lblFechaInicial);
+
+            dtpFechaInicial = new DateTimePicker
+            {
+                Location = new Point(0, yPos + 25),
+                Width = mainPanel.Width - 40,
+                Format = DateTimePickerFormat.Short
+            };
+            inputStyle(dtpFechaInicial);
+
+            // Saldo Cuenta
+            yPos += spacing;
+            Label lblSaldoCuenta = new Label { Text = "Saldo Cuenta", Location = new Point(0, yPos) };
+            labelStyle(lblSaldoCuenta);
+
+            txtSaldoCuenta = new TextBox
+            {
+                Location = new Point(0, yPos + 25),
+                Width = mainPanel.Width - 40,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+            inputStyle(txtSaldoCuenta);
+
+            // Fecha Final
+            yPos += spacing;
+            Label lblFechaFinal = new Label { Text = "Fecha Final", Location = new Point(0, yPos) };
+            labelStyle(lblFechaFinal);
+
+            dtpFechaFinal = new DateTimePicker
+            {
+                Location = new Point(0, yPos + 25),
+                Width = mainPanel.Width - 40,
+                Format = DateTimePickerFormat.Short
+            };
+            inputStyle(dtpFechaFinal);
+
+            // Estado
+            yPos += spacing;
+            Label lblEstado = new Label { Text = "Estado", Location = new Point(0, yPos) };
+            labelStyle(lblEstado);
+
+            cmbEstado = new ComboBox
+            {
+                Location = new Point(0, yPos + 25),
+                Width = mainPanel.Width - 40,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                FlatStyle = FlatStyle.Flat
+            };
+            inputStyle(cmbEstado);
+            cmbEstado.Items.AddRange(new object[] { "Pendiente", "Pagada" });
+
+            // Botón Agregar Cuenta
+            yPos += spacing;
             Button btnAgregarCuenta = new Button
             {
                 Text = "Agregar Cuenta",
-                Location = new System.Drawing.Point(100, 300),
-                Width = 250
+                Location = new Point(0, yPos + 25),
+                Width = mainPanel.Width - 40,
+                Height = 40,
+                FlatStyle = FlatStyle.Flat,
+                BackColor = Color.FromArgb(0, 122, 204),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 10F, FontStyle.Regular),
+                Cursor = Cursors.Hand
             };
-            btnAgregarCuenta.Click += (sender, e) => BtnAgregarCuenta_Click(sender, e, cmbCliente, txtArticulo, txtValorCredito, dtpFechaInicial, txtSaldoCuenta, dtpFechaFinal, cmbEstado);
 
-            // Agregar los controles al formulario
-            this.Controls.Add(lblCliente);
-            this.Controls.Add(cmbCliente);
-            this.Controls.Add(lblArticulo);
-            this.Controls.Add(txtArticulo);
-            this.Controls.Add(lblValorCredito);
-            this.Controls.Add(txtValorCredito);
-            this.Controls.Add(lblFechaInicial);
-            this.Controls.Add(dtpFechaInicial);
-            this.Controls.Add(lblSaldoCuenta);
-            this.Controls.Add(txtSaldoCuenta);
-            this.Controls.Add(lblFechaFinal);
-            this.Controls.Add(dtpFechaFinal);
-            this.Controls.Add(lblEstado);
-            this.Controls.Add(cmbEstado);
-            this.Controls.Add(btnAgregarCuenta);
+            // Add hover effect
+            btnAgregarCuenta.MouseEnter += (s, e) => {
+                btnAgregarCuenta.BackColor = Color.FromArgb(0, 102, 184);
+            };
+            btnAgregarCuenta.MouseLeave += (s, e) => {
+                btnAgregarCuenta.BackColor = Color.FromArgb(0, 122, 204);
+            };
 
-            // Cargar los clientes al ComboBox
+            btnAgregarCuenta.Click += (sender, e) => BtnAgregarCuenta_Click(sender, e, cmbCliente, txtArticulo, txtValorCredito,
+                                                                           dtpFechaInicial, txtSaldoCuenta, dtpFechaFinal, cmbEstado);
+
+            // Add controls to main panel
+            mainPanel.Controls.AddRange(new Control[] {
+                lblCliente, cmbCliente,
+                lblArticulo, txtArticulo,
+                lblValorCredito, txtValorCredito,
+                lblFechaInicial, dtpFechaInicial,
+                lblSaldoCuenta, txtSaldoCuenta,
+                lblFechaFinal, dtpFechaFinal,
+                lblEstado, cmbEstado,
+                btnAgregarCuenta
+            });
+
+            // Add main panel to form
+            this.Controls.Add(mainPanel);
+
+            // Load clients
             LoadClientes(cmbCliente);
         }
 
@@ -78,15 +199,15 @@ namespace MoneyManageApp
                 using (SQLiteConnection conn = Database.GetConnection())
                 {
                     conn.Open();
-                    string query = "SELECT NombreRazonSocial FROM Clientes";  // Asegúrate de que 'Clientes' tiene el campo 'NombreCliente'
+                    string query = "SELECT NombreRazonSocial FROM Clientes";
                     using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                     {
                         SQLiteDataReader reader = cmd.ExecuteReader();
-                        cmbCliente.Items.Clear();  // Limpiar antes de agregar nuevos elementos
+                        cmbCliente.Items.Clear();
 
                         while (reader.Read())
                         {
-                            cmbCliente.Items.Add(reader["NombreRazonSocial"].ToString());  // Asegúrate de usar el nombre correcto de la columna
+                            cmbCliente.Items.Add(reader["NombreRazonSocial"].ToString());
                         }
                     }
                 }
@@ -97,7 +218,9 @@ namespace MoneyManageApp
             }
         }
 
-        private void BtnAgregarCuenta_Click(object sender, EventArgs e, ComboBox cmbCliente, TextBox txtArticulo, TextBox txtValorCredito, DateTimePicker dtpFechaInicial, TextBox txtSaldoCuenta, DateTimePicker dtpFechaFinal, ComboBox cmbEstado)
+        private void BtnAgregarCuenta_Click(object sender, EventArgs e, ComboBox cmbCliente, TextBox txtArticulo,
+            TextBox txtValorCredito, DateTimePicker dtpFechaInicial, TextBox txtSaldoCuenta,
+            DateTimePicker dtpFechaFinal, ComboBox cmbEstado)
         {
             try
             {
@@ -132,7 +255,7 @@ namespace MoneyManageApp
                 }
 
                 MessageBox.Show("Cuenta por cobrar registrada exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close(); // Cerrar el formulario después de agregar la cuenta
+                this.Close();
             }
             catch (Exception ex)
             {

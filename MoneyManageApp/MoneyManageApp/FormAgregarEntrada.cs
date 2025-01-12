@@ -10,8 +10,8 @@ namespace MoneyManageApp
         private Label lblCodigo;
         private Label lblArticulo;
         private Label lblCantidad;
-        private TextBox txtCodigo;
-        private TextBox txtArticulo;
+        private ComboBox cmbCodigo;
+        private ComboBox cmbArticulo;
         private NumericUpDown nudCantidad;
         private Button btnGuardar;
         private Button btnCancelar;
@@ -19,6 +19,7 @@ namespace MoneyManageApp
         public FormAgregarEntrada()
         {
             InitializeComponent();
+            LoadComboBoxData();
         }
 
         private void InitializeComponent()
@@ -34,11 +35,13 @@ namespace MoneyManageApp
                 AutoSize = true
             };
 
-            txtCodigo = new TextBox
+            cmbCodigo = new ComboBox
             {
                 Location = new Point(150, 20),
-                Width = 200
+                Width = 200,
+                DropDownStyle = ComboBoxStyle.DropDownList
             };
+            cmbCodigo.SelectedIndexChanged += CmbCodigo_SelectedIndexChanged;
 
             lblArticulo = new Label
             {
@@ -47,11 +50,13 @@ namespace MoneyManageApp
                 AutoSize = true
             };
 
-            txtArticulo = new TextBox
+            cmbArticulo = new ComboBox
             {
                 Location = new Point(150, 60),
-                Width = 200
+                Width = 200,
+                DropDownStyle = ComboBoxStyle.DropDownList
             };
+            cmbArticulo.SelectedIndexChanged += CmbArticulo_SelectedIndexChanged;
 
             lblCantidad = new Label
             {
@@ -85,24 +90,124 @@ namespace MoneyManageApp
             btnCancelar.Click += (sender, e) => this.Close();
 
             this.Controls.Add(lblCodigo);
-            this.Controls.Add(txtCodigo);
+            this.Controls.Add(cmbCodigo);
             this.Controls.Add(lblArticulo);
-            this.Controls.Add(txtArticulo);
+            this.Controls.Add(cmbArticulo);
             this.Controls.Add(lblCantidad);
             this.Controls.Add(nudCantidad);
             this.Controls.Add(btnGuardar);
             this.Controls.Add(btnCancelar);
         }
 
+        private void LoadComboBoxData()
+        {
+            try
+            {
+                using (var connection = Database.GetConnection())
+                {
+                    connection.Open();
+
+                    // Cargar códigos de productos en el ComboBox
+                    string queryCodigos = "SELECT Codigo, Articulo FROM Productos";
+                    using (var cmd = new SQLiteCommand(queryCodigos, connection))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string codigo = reader["Codigo"].ToString();
+                            string articulo = reader["Articulo"].ToString();
+
+                            cmbCodigo.Items.Add(codigo);
+                            cmbArticulo.Items.Add(articulo);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar los datos: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void CmbCodigo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbCodigo.SelectedItem == null)
+                return;
+
+            string selectedCodigo = cmbCodigo.SelectedItem.ToString();
+
+            try
+            {
+                using (var connection = Database.GetConnection())
+                {
+                    connection.Open();
+
+                    string query = "SELECT Articulo FROM Productos WHERE Codigo = @Codigo";
+                    using (var cmd = new SQLiteCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@Codigo", selectedCodigo);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string articulo = reader["Articulo"].ToString();
+                                cmbArticulo.SelectedItem = articulo;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar el artículo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void CmbArticulo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbArticulo.SelectedItem == null)
+                return;
+
+            string selectedArticulo = cmbArticulo.SelectedItem.ToString();
+
+            try
+            {
+                using (var connection = Database.GetConnection())
+                {
+                    connection.Open();
+
+                    string query = "SELECT Codigo FROM Productos WHERE Articulo = @Articulo";
+                    using (var cmd = new SQLiteCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@Articulo", selectedArticulo);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string codigo = reader["Codigo"].ToString();
+                                cmbCodigo.SelectedItem = codigo;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar el código: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void BtnGuardar_Click(object sender, EventArgs e)
         {
-            string codigo = txtCodigo.Text.Trim();
-            string articulo = txtArticulo.Text.Trim();
+            string codigo = cmbCodigo.SelectedItem?.ToString();
+            string articulo = cmbArticulo.SelectedItem?.ToString();
             int cantidad = (int)nudCantidad.Value;
 
             if (string.IsNullOrEmpty(codigo) || string.IsNullOrEmpty(articulo))
             {
-                MessageBox.Show("Por favor, complete todos los campos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Por favor, seleccione un código y un artículo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -112,21 +217,6 @@ namespace MoneyManageApp
                 {
                     connection.Open();
 
-                    // Verificar si el producto existe en la tabla Productos
-                    string queryCheckProducto = "SELECT COUNT(*) FROM Productos WHERE Codigo = @Codigo";
-                    using (var cmdCheck = new SQLiteCommand(queryCheckProducto, connection))
-                    {
-                        cmdCheck.Parameters.AddWithValue("@Codigo", codigo);
-                        long count = (long)cmdCheck.ExecuteScalar();
-
-                        if (count == 0)
-                        {
-                            MessageBox.Show("El producto no existe en el inventario.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-
-                    // Insertar la entrada en la tabla Entradas
                     string queryInsertEntrada = @"INSERT INTO Entradas (Codigo, Articulo, Fecha, Cantidad) 
                                                     VALUES (@Codigo, @Articulo, @Fecha, @Cantidad)";
                     using (var cmdInsert = new SQLiteCommand(queryInsertEntrada, connection))
@@ -138,18 +228,9 @@ namespace MoneyManageApp
                         cmdInsert.ExecuteNonQuery();
                     }
 
-                    // Actualizar el stock en la tabla Productos
-                    string queryUpdateStock = "UPDATE Productos SET Entradas = Entradas + @Cantidad, Stock = Stock + @Cantidad WHERE Codigo = @Codigo";
-                    using (var cmdUpdate = new SQLiteCommand(queryUpdateStock, connection))
-                    {
-                        cmdUpdate.Parameters.AddWithValue("@Cantidad", cantidad);
-                        cmdUpdate.Parameters.AddWithValue("@Codigo", codigo);
-                        cmdUpdate.ExecuteNonQuery();
-                    }
+                    MessageBox.Show("Entrada registrada exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Close();
                 }
-
-                MessageBox.Show("Entrada registrada exitosamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
             }
             catch (Exception ex)
             {
