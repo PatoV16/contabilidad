@@ -16,3 +16,7 @@ C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\bin
 C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\bin\Debug\EntityFramework.SqlServer.xml
 C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\bin\Debug\System.Data.SQLite.xml
 C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\obj\Debug\MoneyMan.C7F84DDF.Up2Date
+C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\bin\Debug\MoneyManageApp.exe.manifest
+C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\bin\Debug\MoneyManageApp.application
+C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\obj\Debug\MoneyManageApp.exe.manifest
+C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\obj\Debug\MoneyManageApp.application

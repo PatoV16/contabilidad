@@ -131,11 +131,12 @@ namespace MoneyManageApp
             var btnInventario = CreateMenuButton("📦 Control de\nInventario", BtnInventario_Click);
             var btnRegistroClientes = CreateMenuButton("👥 Registro de\nClientes", BtnRegistroClientes_Click);
             var btnCitas = CreateMenuButton("📅 Control de\nCitas", BtnCitas_Click);
+            var btnOdontograma = CreateMenuButton("🦷 Control de\nOdontograma", BtnOdontograma_Click);
             var btnBorrarBD = CreateMenuButton("🗑️ Borrar Base\nde Datos", BtnBorrarBD_Click);
 
             buttonContainer.Controls.AddRange(new Control[] {
                 btnIngresosEgresos, btnCuentasPorCobrar, btnInventario,
-                btnRegistroClientes, btnCitas, btnBorrarBD
+                btnRegistroClientes, btnCitas, btnOdontograma, btnBorrarBD
             });
 
             mainContainer.Controls.Add(buttonContainer);
@@ -317,6 +318,11 @@ namespace MoneyManageApp
                     );
                 }
             }
+        }
+        private void BtnOdontograma_Click(object sender, EventArgs e)
+        {
+            FormOdontograma form = new FormOdontograma();
+            form.ShowDialog();
         }
     }
 }
