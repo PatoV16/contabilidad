@@ -20,3 +20,5 @@ C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\obj
 C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\obj\Release\MoneyMan.C7F84DDF.Up2Date
 C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\obj\Release\MoneyManageApp.exe
 C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\obj\Release\MoneyManageApp.pdb
+C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\bin\Release\Newtonsoft.Json.dll
+C:\Users\Usuario\Documents\GitHub\contabilidad\MoneyManageApp\MoneyManageApp\bin\Release\Newtonsoft.Json.xml

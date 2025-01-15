@@ -113,6 +113,18 @@ namespace MoneyManageApp
                     Concepto TEXT NOT NULL
                 );";
 
+                string createOdontogramasTable = @"
+                CREATE TABLE IF NOT EXISTS Odontogramas (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ClienteId TEXT NOT NULL,
+                    FechaRegistro TEXT NOT NULL,
+                    DoctorId TEXT NULL,
+                    Especificaciones TEXT,
+                    Observaciones TEXT,
+                    DientesEstado TEXT NOT NULL, -- JSON string containing teeth states
+                    FOREIGN KEY(ClienteId) REFERENCES Clientes(CedulaRUC)
+                );";
+
                 string addNombreToRecaudosDiarios = @"ALTER TABLE RecaudosDiarios ADD COLUMN NombreCliente TEXT;";
                 string addConceptoToRecaudosDiarios = @"ALTER TABLE RecaudosDiarios ADD COLUMN Concepto TEXT;";
 
@@ -132,6 +144,8 @@ namespace MoneyManageApp
                     command.CommandText = createCuentasPorCobrarTable;
                     command.ExecuteNonQuery();
                     command.CommandText = createRecaudosDiariosTable;
+                    command.ExecuteNonQuery();
+                    command.CommandText = createOdontogramasTable;
                     command.ExecuteNonQuery();
                     command.CommandText = createCitasTable;
                     command.ExecuteNonQuery();

@@ -66,14 +66,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MoneyManageApp.exe" size="67568">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MoneyManageApp.exe" size="79856">
       <assemblyIdentity name="MoneyManageApp" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>imPPcgg2NKv+Fl7lQrMM2mFofj9b5k93sSRDFxKz4dg=</dsig:DigestValue>
+        <dsig:DigestValue>OI/Za/P7B6MeR87r70H47NC99GntnmVi7PkWuxZANV8=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Newtonsoft.Json.dll" size="711952">
+      <assemblyIdentity name="Newtonsoft.Json" version="13.0.0.0" publicKeyToken="30AD4FE6B2A6AEED" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>4eJ697B+7t9c5xqSVfBCKBam/FhJpIPGcU4bRyBE+p0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
