@@ -17,6 +17,9 @@ namespace MoneyManageApp
         private Button btnLimpiar;
         private TextBox txtEspecificaciones;
         private TextBox txtObservaciones;
+        private TextBox txtBuscar;
+        private Button btnBuscar;
+        private Panel panelLeyenda;
         private string state;
 
         public FormOdontograma()
@@ -25,19 +28,17 @@ namespace MoneyManageApp
             CargarPacientes();
             InicializarDientes();
             cmbPaciente.SelectedIndexChanged += CmbPaciente_SelectedIndexChanged;
-
-
         }
+
         private void CmbPaciente_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbPaciente.SelectedIndex > 0) // Si hay un paciente seleccionado
+            if (cmbPaciente.SelectedIndex > 0)
             {
                 var pacienteId = ((ComboBoxItem)cmbPaciente.SelectedItem).Value;
                 CargarOdontograma(pacienteId);
             }
             else
             {
-                // Limpiar el odontograma si no hay paciente seleccionado
                 BtnLimpiar_Click(null, null);
             }
         }
@@ -49,7 +50,11 @@ namespace MoneyManageApp
                 using (var connection = Database.GetConnection())
                 {
                     connection.Open();
-                    using (var command = new SQLiteCommand("SELECT DientesEstado FROM Odontogramas WHERE ClienteId = @ClienteId ORDER BY FechaRegistro DESC LIMIT 1", connection))
+                    using (var command = new SQLiteCommand(@"
+                SELECT DientesEstado, Especificaciones, Observaciones 
+                FROM Odontogramas 
+                WHERE ClienteId = @ClienteId 
+                ORDER BY FechaRegistro DESC LIMIT 1", connection))
                     {
                         command.Parameters.AddWithValue("@ClienteId", pacienteId);
 
@@ -57,11 +62,10 @@ namespace MoneyManageApp
                         {
                             if (reader.Read())
                             {
+                                // Cargar estado de los dientes
                                 string dientesEstadoJson = reader["DientesEstado"].ToString();
                                 var dientesEstado = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int, string>>(dientesEstadoJson);
 
-                                // Actualizar el estado de los dientes en la interfaz
-                                // Dentro de CargarOdontograma
                                 foreach (var diente in dientesEstado)
                                 {
                                     if (dientes.ContainsKey(diente.Key))
@@ -70,10 +74,18 @@ namespace MoneyManageApp
                                     }
                                 }
 
+                                // Cargar especificaciones y observaciones
+                                txtEspecificaciones.Text = reader["Especificaciones"].ToString();
+                                txtObservaciones.Text = reader["Observaciones"].ToString();
                             }
                             else
                             {
-                                MessageBox.Show("No se encontró un odontograma registrado para este paciente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                MessageBox.Show("No se encontró un odontograma registrado para este paciente.",
+                                    "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                                // Limpiar los campos
+                                txtEspecificaciones.Clear();
+                                txtObservaciones.Clear();
                             }
                         }
                     }
@@ -81,15 +93,15 @@ namespace MoneyManageApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar el odontograma: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al cargar el odontograma: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-       
 
         private void InitializeComponent()
         {
             this.Text = "Odontograma";
-            this.Size = new Size(1000, 800);
+            this.Size = new Size(1200, 800); // Increased width to accommodate legend
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
 
@@ -116,9 +128,28 @@ namespace MoneyManageApp
                 Font = new Font("Segoe UI", 9, FontStyle.Bold)
             };
 
-            cmbPaciente = new ComboBox
+            txtBuscar = new TextBox
             {
                 Location = new Point(80, 17),
+                Width = 150,
+                Text = "Buscar paciente..."
+            };
+
+            btnBuscar = new Button
+            {
+                Text = "🔍",
+                Location = new Point(235, 15),
+                Width = 30,
+                Height = 30,
+                BackColor = Color.FromArgb(59, 130, 246),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            btnBuscar.Click += BtnBuscar_Click;
+
+            cmbPaciente = new ComboBox
+            {
+                Location = new Point(270, 17),
                 Width = 250,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
@@ -126,7 +157,7 @@ namespace MoneyManageApp
             btnGuardar = new Button
             {
                 Text = "Guardar",
-                Location = new Point(350, 15),
+                Location = new Point(530, 15),
                 Width = 100,
                 Height = 30,
                 BackColor = Color.FromArgb(59, 130, 246),
@@ -138,7 +169,7 @@ namespace MoneyManageApp
             btnLimpiar = new Button
             {
                 Text = "Limpiar",
-                Location = new Point(460, 15),
+                Location = new Point(640, 15),
                 Width = 100,
                 Height = 30,
                 BackColor = Color.FromArgb(59, 130, 246),
@@ -146,6 +177,17 @@ namespace MoneyManageApp
                 FlatStyle = FlatStyle.Flat
             };
             btnLimpiar.Click += BtnLimpiar_Click;
+
+            // Create and setup legend panel
+            panelLeyenda = new Panel
+            {
+                Dock = DockStyle.Right,
+                Width = 150,
+                BackColor = Color.FromArgb(249, 250, 251),
+                Padding = new Padding(10)
+            };
+
+            CreateLegend();
 
             Panel panelNotas = new Panel
             {
@@ -192,11 +234,83 @@ namespace MoneyManageApp
             });
 
             panelSuperior.Controls.AddRange(new Control[] {
-                lblPaciente, cmbPaciente,
+                lblPaciente, txtBuscar, btnBuscar, cmbPaciente,
                 btnGuardar, btnLimpiar
             });
 
-            this.Controls.AddRange(new Control[] { panelOdontograma, panelSuperior, panelNotas });
+            this.Controls.AddRange(new Control[] {
+                panelOdontograma,
+                panelSuperior,
+                panelNotas,
+                panelLeyenda
+            });
+        }
+
+        private void CreateLegend()
+        {
+            Label lblLeyenda = new Label
+            {
+                Text = "LEYENDA",
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Location = new Point(10, 10)
+            };
+
+            var legendItems = new Dictionary<string, Color>
+            {
+                { "Sano", Color.White },
+                { "Caries", Color.Red },
+                { "Obturado", Color.FromArgb(192, 192, 192) },
+                { "Ausente", Color.LightGray },
+                { "Corona", Color.Gold },
+                { "Puente", Color.RoyalBlue },
+                { "Implante", Color.DarkGreen }
+            };
+
+            int yOffset = 40;
+            foreach (var item in legendItems)
+            {
+                Panel colorBox = new Panel
+                {
+                    Location = new Point(10, yOffset),
+                    Size = new Size(20, 20),
+                    BackColor = item.Value,
+                    BorderStyle = BorderStyle.FixedSingle
+                };
+
+                Label label = new Label
+                {
+                    Text = item.Key,
+                    Location = new Point(40, yOffset),
+                    AutoSize = true
+                };
+
+                panelLeyenda.Controls.Add(colorBox);
+                panelLeyenda.Controls.Add(label);
+
+                yOffset += 30;
+            }
+
+            panelLeyenda.Controls.Add(lblLeyenda);
+        }
+
+        private void BtnBuscar_Click(object sender, EventArgs e)
+        {
+            string searchTerm = txtBuscar.Text.Trim().ToLower();
+            if (string.IsNullOrEmpty(searchTerm)) return;
+
+            foreach (ComboBoxItem item in cmbPaciente.Items)
+            {
+                if (item.Display.ToLower().Contains(searchTerm) ||
+                    item.Value.ToLower().Contains(searchTerm))
+                {
+                    cmbPaciente.SelectedItem = item;
+                    return;
+                }
+            }
+
+            MessageBox.Show("No se encontró ningún paciente con ese criterio de búsqueda.",
+                "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void CargarPacientes()
@@ -283,7 +397,6 @@ namespace MoneyManageApp
             var especificaciones = txtEspecificaciones.Text.Trim();
             var observaciones = txtObservaciones.Text.Trim();
 
-            // Serializar el estado de los dientes
             var dientesEstado = new Dictionary<int, string>();
             foreach (var diente in dientes)
             {
@@ -298,9 +411,33 @@ namespace MoneyManageApp
                     connection.Open();
                     using (var command = new SQLiteCommand(connection))
                     {
-                        command.CommandText = @"
+                        // Primero verificamos si existe un registro para este paciente
+                        command.CommandText = "SELECT COUNT(*) FROM Odontogramas WHERE ClienteId = @ClienteId";
+                        command.Parameters.AddWithValue("@ClienteId", pacienteId);
+                        int existingRecords = Convert.ToInt32(command.ExecuteScalar());
+
+                        command.Parameters.Clear();
+
+                        if (existingRecords > 0)
+                        {
+                            // Si existe, actualizamos el registro
+                            command.CommandText = @"
+                        UPDATE Odontogramas 
+                        SET FechaRegistro = @FechaRegistro,
+                            Especificaciones = @Especificaciones,
+                            Observaciones = @Observaciones,
+                            DientesEstado = @DientesEstado
+                        WHERE ClienteId = @ClienteId";
+                        }
+                        else
+                        {
+                            // Si no existe, insertamos un nuevo registro
+                            command.CommandText = @"
                         INSERT INTO Odontogramas (ClienteId, FechaRegistro, Especificaciones, Observaciones, DientesEstado)
                         VALUES (@ClienteId, @FechaRegistro, @Especificaciones, @Observaciones, @DientesEstado)";
+                        }
+
+                        // Añadimos los parámetros
                         command.Parameters.AddWithValue("@ClienteId", pacienteId);
                         command.Parameters.AddWithValue("@FechaRegistro", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                         command.Parameters.AddWithValue("@Especificaciones", especificaciones);
@@ -313,7 +450,7 @@ namespace MoneyManageApp
 
                 MessageBox.Show("Odontograma guardado exitosamente.", "Éxito",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-                BtnLimpiar_Click(null, null); // Limpia el formulario después de guardar
+                BtnLimpiar_Click(null, null);
             }
             catch (Exception ex)
             {
@@ -373,6 +510,15 @@ namespace MoneyManageApp
                     break;
                 case "ausente":
                     toothColor = Color.LightGray;
+                    break;
+                case "corona":
+                    toothColor = Color.Gold;
+                    break;
+                case "puente":
+                    toothColor = Color.Blue;
+                    break;
+                case "implante":
+                    toothColor = Color.Green;
                     break;
                 default: // "sano"
                     toothColor = Color.White;
@@ -474,7 +620,7 @@ namespace MoneyManageApp
                 Width = 240,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
-            cmbEstado.Items.AddRange(new string[] { "Sano", "Caries", "Obturado", "Ausente" });
+            cmbEstado.Items.AddRange(new string[] { "Sano", "Caries", "Obturado", "Ausente", "Corona","Puente","Implante" });
             cmbEstado.SelectedIndex = 0;
 
             var btnAceptar = new Button
