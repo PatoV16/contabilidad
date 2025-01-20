@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Windows.Forms;
@@ -132,9 +133,14 @@ namespace MoneyManageApp
                         column.ReadOnly = true;
                         break;
                     case "Estado":
-                        column.Width = 100;
-                        column.HeaderText = "Estado";
-                        column.ReadOnly = false; // Permitir edición
+                        var comboBoxColumn = new DataGridViewComboBoxColumn
+                        {
+                            Name = "Estado",
+                            HeaderText = "Estado",
+                            DataSource = new List<string> { "Pendiente", "Realizada" },
+                            Width = 100,
+                            DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox
+                        };
                         break;
                     case "Concepto":
                         column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;

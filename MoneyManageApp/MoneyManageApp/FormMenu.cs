@@ -12,11 +12,12 @@ namespace MoneyManageApp
         private Panel mainContainer;
         private FlowLayoutPanel buttonContainer;
 
-        // Colores modernos
-        private Color primaryColor = Color.FromArgb(52, 152, 219);  // Azul moderno
-        private Color secondaryColor = Color.FromArgb(245, 247, 250);  // Gris muy claro
-        private Color buttonHoverColor = Color.FromArgb(41, 128, 185);  // Azul oscuro
-        private Color textColor = Color.FromArgb(52, 73, 94);  // Gris oscuro
+        // Colores temáticos dentales
+        private Color primaryColor = Color.FromArgb(41, 171, 226);      // Azul dental
+        private Color secondaryColor = Color.FromArgb(245, 247, 250);   // Gris muy claro
+        private Color buttonHoverColor = Color.FromArgb(0, 150, 199);   // Azul oscuro
+        private Color accentColor = Color.FromArgb(255, 255, 255);      // Blanco
+        private Color textColor = Color.FromArgb(70, 70, 70);           // Gris oscuro
 
         public FormMenu()
         {
@@ -70,14 +71,14 @@ namespace MoneyManageApp
 
         private void InitializeComponent()
         {
-            this.Text = $"Menú Principal - {nombreNegocio}";
-            this.Size = new System.Drawing.Size(1000, 700);
+            this.Text = $"Consultorio Dental - {nombreNegocio}";
+            this.Size = new Size(1200, 800);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = secondaryColor;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
 
-            // Panel principal con sombra
+            // Panel principal
             mainContainer = new Panel
             {
                 Dock = DockStyle.Fill,
@@ -85,34 +86,39 @@ namespace MoneyManageApp
                 BackColor = Color.White
             };
 
-            // Contenedor del título
+            // Panel superior
             Panel headerPanel = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 100,
-                BackColor = Color.White
+                Height = 120,
+                BackColor = primaryColor
             };
 
             // Título principal
             lblTitulo = new Label
             {
-                Text = nombreNegocio,
-                Font = new Font("Segoe UI", 24, FontStyle.Bold),
-                ForeColor = primaryColor,
+                Text = "🦷 " + nombreNegocio,
+                Font = new Font("Segoe UI", 28, FontStyle.Bold),
+                ForeColor = accentColor,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Dock = DockStyle.Fill,
                 Padding = new Padding(0, 10, 0, 0)
             };
             lblTitulo.Click += LblTitulo_Click;
 
-            // Botón de editar
-            Button btnEditarNombre = CreateStyledButton("✎ Editar", 100, 30);
-            btnEditarNombre.Location = new Point(headerPanel.Width - 120, 20);
-            btnEditarNombre.Click += LblTitulo_Click;
-            btnEditarNombre.Font = new Font("Segoe UI", 9f);
+            // Subtítulo
+            Label lblSubtitulo = new Label
+            {
+                Text = "Sistema de Gestión Odontológica",
+                Font = new Font("Segoe UI", 12, FontStyle.Regular),
+                ForeColor = accentColor,
+                TextAlign = ContentAlignment.TopCenter,
+                Dock = DockStyle.Bottom,
+                Height = 30
+            };
 
             headerPanel.Controls.Add(lblTitulo);
-            headerPanel.Controls.Add(btnEditarNombre);
+            headerPanel.Controls.Add(lblSubtitulo);
 
             // Contenedor de botones
             buttonContainer = new FlowLayoutPanel
@@ -122,14 +128,14 @@ namespace MoneyManageApp
                 WrapContents = true,
                 AutoScroll = true,
                 Padding = new Padding(20),
-                BackColor = Color.White
+                BackColor = accentColor
             };
 
             // Crear botones del menú
             var btnIngresosEgresos = CreateMenuButton("💰 Control de\nIngresos y Egresos", BtnIngresosEgresos_Click);
             var btnCuentasPorCobrar = CreateMenuButton("📊 Control de\nCuentas por Cobrar", BtnCuentasPorCobrar_Click);
             var btnInventario = CreateMenuButton("📦 Control de\nInventario", BtnInventario_Click);
-            var btnRegistroClientes = CreateMenuButton("👥 Registro de\nClientes", BtnRegistroClientes_Click);
+            var btnRegistroClientes = CreateMenuButton("👥 Registro de\nPacientes", BtnRegistroClientes_Click);
             var btnCitas = CreateMenuButton("📅 Control de\nCitas", BtnCitas_Click);
             var btnOdontograma = CreateMenuButton("🦷 Control de\nOdontograma", BtnOdontograma_Click);
             var btnBorrarBD = CreateMenuButton("🗑️ Borrar Base\nde Datos", BtnBorrarBD_Click);
@@ -143,6 +149,7 @@ namespace MoneyManageApp
             mainContainer.Controls.Add(headerPanel);
             this.Controls.Add(mainContainer);
         }
+
 
         private Button CreateMenuButton(string text, EventHandler clickHandler)
         {
@@ -271,7 +278,6 @@ namespace MoneyManageApp
         {
             FormCitas form = new FormCitas();
             form.ShowDialog();
-
         }
 
         private void BtnBorrarBD_Click(object sender, EventArgs e)
@@ -320,6 +326,7 @@ namespace MoneyManageApp
                 }
             }
         }
+
         private void BtnOdontograma_Click(object sender, EventArgs e)
         {
             FormOdontograma form = new FormOdontograma();

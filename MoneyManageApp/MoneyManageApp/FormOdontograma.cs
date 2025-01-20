@@ -198,7 +198,7 @@ namespace MoneyManageApp
 
             Label lblEspecificaciones = new Label
             {
-                Text = "ESPECIFICACIONES",
+                Text = "CITA ACTUAL",
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 Location = new Point(20, 10)
@@ -214,7 +214,7 @@ namespace MoneyManageApp
 
             Label lblObservaciones = new Label
             {
-                Text = "OBSERVACIONES",
+                Text = "PROXIMA CITA",
                 AutoSize = true,
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 Location = new Point(490, 10)
