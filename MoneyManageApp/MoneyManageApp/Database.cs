@@ -109,6 +109,7 @@ namespace MoneyManageApp
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Cliente TEXT NOT NULL,
                     Fecha TEXT NOT NULL,
+                    Hora TIME NOT NULL,
                     Estado TEXT NOT NULL,
                     Concepto TEXT NOT NULL
                 );";
@@ -125,8 +126,7 @@ namespace MoneyManageApp
                     FOREIGN KEY(ClienteId) REFERENCES Clientes(CedulaRUC)
                 );";
 
-                string addNombreToRecaudosDiarios = @"ALTER TABLE RecaudosDiarios ADD COLUMN NombreCliente TEXT;";
-                string addConceptoToRecaudosDiarios = @"ALTER TABLE RecaudosDiarios ADD COLUMN Concepto TEXT;";
+             
 
 
                 using (var command = new SQLiteCommand(connection))

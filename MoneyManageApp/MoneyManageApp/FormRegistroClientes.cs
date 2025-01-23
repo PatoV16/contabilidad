@@ -23,7 +23,7 @@ internal class FormRegistroClientes : Form
 
     private void InitializeComponent()
     {
-        this.Text = "Registro de Clientes";
+        this.Text = "Registro de Pacientes";
         this.Size = new System.Drawing.Size(800, 600);
         this.StartPosition = FormStartPosition.CenterScreen;
         this.BackColor = Color.WhiteSmoke;
@@ -31,7 +31,7 @@ internal class FormRegistroClientes : Form
         // Título
         lblTitulo = new Label
         {
-            Text = "Registro de Clientes",
+            Text = "Registro de Pacientes",
             Font = new Font("Segoe UI", 18, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter,
             Dock = DockStyle.Top,
@@ -119,7 +119,7 @@ internal class FormRegistroClientes : Form
 
         btnAgregarCliente = new Button
         {
-            Text = "Agregar Cliente",
+            Text = "Agregar Paciente",
             Width = 120,
             Location = new Point(10, 12),
             BackColor = Color.FromArgb(0, 122, 204),
@@ -130,7 +130,7 @@ internal class FormRegistroClientes : Form
 
         btnEditarCliente = new Button
         {
-            Text = "Editar Cliente",
+            Text = "Editar Paciente",
             Width = 120,
             Location = new Point(140, 12),
             BackColor = Color.White,
@@ -141,7 +141,7 @@ internal class FormRegistroClientes : Form
 
         btnEliminarCliente = new Button
         {
-            Text = "Eliminar Cliente",
+            Text = "Eliminar Paciente",
             Width = 120,
             Location = new Point(270, 12),
             BackColor = Color.White,
@@ -252,7 +252,7 @@ internal class FormRegistroClientes : Form
     {
         if (dgvClientes.CurrentRow == null)
         {
-            MessageBox.Show("Por favor seleccione un cliente para editar.", "Aviso",
+            MessageBox.Show("Por favor seleccione un paciente para editar.", "Aviso",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -260,7 +260,7 @@ internal class FormRegistroClientes : Form
         string cedulaRuc = dgvClientes.CurrentRow.Cells["CedulaRuc"].Value?.ToString();
         if (string.IsNullOrEmpty(cedulaRuc))
         {
-            MessageBox.Show("Error al obtener la información del cliente.", "Error",
+            MessageBox.Show("Error al obtener la información del paciente.", "Error",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }

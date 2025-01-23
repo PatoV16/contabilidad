@@ -3,20 +3,40 @@
   "WorkspaceRootPath": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|c:\\users\\usuario\\documents\\github\\contabilidad\\moneymanageapp\\moneymanageapp\\formcitas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formcitas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\moneymanageapp\\formmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\moneymanageapp\\formagregarnuevoegreso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formagregarnuevoegreso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\moneymanageapp\\formagregaringreso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formagregaringreso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\moneymanageapp\\formagregarnuevoegreso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formagregarnuevoegreso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|c:\\users\\usuario\\documents\\github\\contabilidad\\moneymanageapp\\moneymanageapp\\formcuentasporcobrar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formcuentasporcobrar.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\moneymanageapp\\formcitas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formcitas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|c:\\users\\usuario\\documents\\github\\contabilidad\\moneymanageapp\\moneymanageapp\\formregistroclientes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formregistroclientes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\moneymanageapp\\formmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|c:\\users\\usuario\\documents\\github\\contabilidad\\moneymanageapp\\moneymanageapp\\database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|c:\\users\\usuario\\documents\\github\\contabilidad\\moneymanageapp\\moneymanageapp\\formagregarccita.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formagregarccita.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|c:\\users\\usuario\\documents\\github\\contabilidad\\moneymanageapp\\moneymanageapp\\formpassword.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formpassword.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,8 +46,22 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 10,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "FormCitas.cs",
+              "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormCitas.cs",
+              "RelativeDocumentMoniker": "MoneyManageApp\\FormCitas.cs",
+              "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormCitas.cs",
+              "RelativeToolTip": "MoneyManageApp\\FormCitas.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAADMAAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-20T03:01:22.25Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:1:0:{fabf9319-47eb-497e-b8f6-d9f73fba5f55}"
@@ -42,51 +76,104 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "FormCitas.cs",
-              "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormCitas.cs",
-              "RelativeDocumentMoniker": "MoneyManageApp\\FormCitas.cs",
-              "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormCitas.cs",
-              "RelativeToolTip": "MoneyManageApp\\FormCitas.cs",
-              "ViewState": "AQIAAG0AAAAAAAAAAAAAAIQAAAAvAAAA",
+              "DocumentIndex": 2,
+              "Title": "FormCuentasPorCobrar.cs",
+              "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormCuentasPorCobrar.cs",
+              "RelativeDocumentMoniker": "MoneyManageApp\\FormCuentasPorCobrar.cs",
+              "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormCuentasPorCobrar.cs",
+              "RelativeToolTip": "MoneyManageApp\\FormCuentasPorCobrar.cs",
+              "ViewState": "AQIAAC0AAAAAAAAAAAAYwDcAAAAmAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-20T03:01:22.25Z",
+              "WhenOpened": "2025-01-23T16:26:45.686Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
+              "Title": "FormRegistroClientes.cs",
+              "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormRegistroClientes.cs",
+              "RelativeDocumentMoniker": "MoneyManageApp\\FormRegistroClientes.cs",
+              "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormRegistroClientes.cs",
+              "RelativeToolTip": "MoneyManageApp\\FormRegistroClientes.cs",
+              "ViewState": "AQIAAGgBAAAAAAAAAAAIwAYBAABJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-23T16:23:48.372Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "FormPassword.cs",
+              "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormPassword.cs",
+              "RelativeDocumentMoniker": "MoneyManageApp\\FormPassword.cs",
+              "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormPassword.cs",
+              "RelativeToolTip": "MoneyManageApp\\FormPassword.cs",
+              "ViewState": "AQIAAO4AAAAAAAAAAADwvwsBAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-23T14:55:08.918Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "FormAgregarcCita.cs",
+              "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormAgregarcCita.cs",
+              "RelativeDocumentMoniker": "MoneyManageApp\\FormAgregarcCita.cs",
+              "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormAgregarcCita.cs",
+              "RelativeToolTip": "MoneyManageApp\\FormAgregarcCita.cs",
+              "ViewState": "AQIAAMsAAAAAAAAAAAAIwNQAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-23T14:33:56.216Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Database.cs",
+              "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\Database.cs",
+              "RelativeDocumentMoniker": "MoneyManageApp\\Database.cs",
+              "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\Database.cs",
+              "RelativeToolTip": "MoneyManageApp\\Database.cs",
+              "ViewState": "AQIAAH0AAAAAAAAAAAAAAJYAAAAuAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T15:55:02.647Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "FormMenu.cs",
               "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormMenu.cs",
               "RelativeDocumentMoniker": "MoneyManageApp\\FormMenu.cs",
               "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormMenu.cs",
               "RelativeToolTip": "MoneyManageApp\\FormMenu.cs",
-              "ViewState": "AQIAAHsAAAAAAAAAAAAAAI0AAAAAAAAA",
+              "ViewState": "AQIAABgBAAAAAAAAAAAwwCwBAAA6AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-06T21:23:39.773Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "FormAgregarNuevoEgreso.cs",
               "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormAgregarNuevoEgreso.cs",
               "RelativeDocumentMoniker": "MoneyManageApp\\FormAgregarNuevoEgreso.cs",
               "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormAgregarNuevoEgreso.cs",
               "RelativeToolTip": "MoneyManageApp\\FormAgregarNuevoEgreso.cs",
-              "ViewState": "AQIAAHsAAAAAAAAAAAAUwIkAAAANAAAA",
+              "ViewState": "AQIAAGAAAAAAAAAAAAAYwGwAAAAgAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-06T19:34:57.144Z"
+              "WhenOpened": "2025-01-06T19:34:57.144Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "FormAgregarIngreso.cs",
               "DocumentMoniker": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormAgregarIngreso.cs",
               "RelativeDocumentMoniker": "MoneyManageApp\\FormAgregarIngreso.cs",
               "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormAgregarIngreso.cs",
               "RelativeToolTip": "MoneyManageApp\\FormAgregarIngreso.cs",
-              "ViewState": "AQIAAJgAAAAAAAAAAAAAAK0AAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAoAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-06T19:34:06.642Z",
               "EditorCaption": ""

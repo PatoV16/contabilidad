@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace MoneyManageApp
@@ -14,6 +15,7 @@ namespace MoneyManageApp
         private Button btnNuevaCita;
         private Panel panelBotones;
         private Panel panelGrid;
+        private Button btnProximasCitas;
 
         public FormCitas()
         {
@@ -23,80 +25,107 @@ namespace MoneyManageApp
 
         private void CreateControls()
         {
-            // DataGridView para mostrar citas
+            // DataGridView for appointments
             dgvCitas = new DataGridView
             {
                 Dock = DockStyle.Fill,
-                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells,
                 AllowUserToAddRows = false,
-                ReadOnly = false, // Permitir edición
+                ReadOnly = false,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 MultiSelect = false,
                 AutoGenerateColumns = true,
                 RowHeadersVisible = false,
                 AllowUserToResizeRows = false,
-                BackgroundColor = System.Drawing.SystemColors.Window,
-                BorderStyle = BorderStyle.Fixed3D,
-                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+                BackgroundColor = Color.White,
+                BorderStyle = BorderStyle.None,
+                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
+                RowTemplate = { Height = 40 } // Increase row height
             };
             dgvCitas.CellValueChanged += DgvCitas_CellValueChanged;
 
-            // ComboBox para filtrar por estado
+            // Appointment status filter
             cmbEstadoFiltro = new ComboBox
             {
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Width = 150,
-                Location = new System.Drawing.Point(500, 10)
+                Location = new Point(500, 10),
+                Font = new Font("Segoe UI", 12)
             };
-            cmbEstadoFiltro.Items.AddRange(new string[] { "Todos", "Pendiente", "Realizada" });
+            cmbEstadoFiltro.Items.AddRange(new string[] {  "Pendiente", "Realizado" });
             cmbEstadoFiltro.SelectedIndex = 0;
             cmbEstadoFiltro.SelectedIndexChanged += CmbEstadoFiltro_SelectedIndexChanged;
 
-            // Botón de refrescar
+            // Refresh button
             btnRefresh = new Button
             {
-                Text = "Refrescar",
-                Size = new System.Drawing.Size(100, 30), // Ajusta el tamaño del botón
-                Location = new System.Drawing.Point(10, 10) // Posición en el panel
+                Text = "Actualizar",
+                Size = new Size(100, 40),
+                Location = new Point(10, 10),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(52, 152, 219),
+                FlatStyle = FlatStyle.Flat,
+                FlatAppearance = { BorderSize = 0 }
             };
             btnRefresh.Click += BtnRefresh_Click;
 
-            // Botón para nueva cita
+            // New appointment button
             btnNuevaCita = new Button
             {
                 Text = "Nueva Cita",
-                Size = new System.Drawing.Size(100, 30), // Igual tamaño que el botón anterior
-                Location = new System.Drawing.Point(120, 10) // Posición a la derecha del primer botón
+                Size = new Size(150, 40),
+                Location = new Point(120, 10),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(46, 204, 113),
+                FlatStyle = FlatStyle.Flat,
+                FlatAppearance = { BorderSize = 0 }
             };
             btnNuevaCita.Click += BtnNuevaCita_Click;
 
-            // Panel de botones
+            // Buttons panel
             panelBotones = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 50,
-                BackColor = System.Drawing.Color.WhiteSmoke
+                Height = 60,
+                BackColor = Color.FromArgb(245, 245, 245)
             };
             panelBotones.Controls.Add(cmbEstadoFiltro);
             panelBotones.Controls.Add(btnRefresh);
             panelBotones.Controls.Add(btnNuevaCita);
 
-            // Panel del grid
+            // Grid panel
             panelGrid = new Panel
             {
                 Dock = DockStyle.Fill,
-                Padding = new Padding(10)
+                Padding = new Padding(20)
             };
             panelGrid.Controls.Add(dgvCitas);
+            btnProximasCitas = new Button
+            {
+                Text = "Próxima cita",
+                Size = new Size(180, 40),
+                Location = new Point(280, 10),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(231, 76, 60),
+                FlatStyle = FlatStyle.Flat,
+                FlatAppearance = { BorderSize = 0 }
+            };
+            btnProximasCitas.Click += BtnProximasCitas_Click;
+
+            panelBotones.Controls.Add(btnProximasCitas); // Añadir al panel de botones
         }
 
         private void InitializeComponent()
         {
             this.SuspendLayout();
 
-            this.Text = "Control de Citas";
-            this.Size = new System.Drawing.Size(800, 600);
+            this.Text = "Calendario de citas dentales";
+            this.Size = new Size(800, 600);
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.BackColor = Color.FromArgb(245, 245, 245);
 
             this.Controls.Add(panelGrid);
             this.Controls.Add(panelBotones);
@@ -108,82 +137,66 @@ namespace MoneyManageApp
 
         private void ConfigureColumns()
         {
-            if (dgvCitas?.Columns == null || dgvCitas.Columns.Count == 0)
-                return;
-
-            foreach (DataGridViewColumn column in dgvCitas.Columns)
+            if (dgvCitas.Columns.Count == 0)
             {
-                if (column == null) continue;
+                dgvCitas.Columns.Add("Id", "ID");
+                dgvCitas.Columns.Add("Cliente", "Pacinte");
+                dgvCitas.Columns.Add("Fecha", "Fecha");
+                dgvCitas.Columns.Add("Hora", "Hora");
+                dgvCitas.Columns.Add("Concepto", "Concepto");
+            }
 
-                switch (column.Name)
+            if (dgvCitas.Columns["Estado"] is null)
+            {
+                // Crear y agregar la columna ComboBox si no existe
+                var comboBoxColumn = new DataGridViewComboBoxColumn
                 {
-                    case "Id":
-                        column.Width = 50;
-                        column.HeaderText = "ID";
-                        column.ReadOnly = true;
-                        break;
-                    case "Cliente":
-                        column.Width = 200;
-                        column.HeaderText = "Cliente";
-                        column.ReadOnly = true;
-                        break;
-                    case "Fecha":
-                        column.Width = 150;
-                        column.HeaderText = "Fecha";
-                        column.ReadOnly = true;
-                        break;
-                    case "Estado":
-                        var comboBoxColumn = new DataGridViewComboBoxColumn
-                        {
-                            Name = "Estado",
-                            HeaderText = "Estado",
-                            DataSource = new List<string> { "Pendiente", "Realizada" },
-                            Width = 100,
-                            DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox
-                        };
-                        break;
-                    case "Concepto":
-                        column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                        column.HeaderText = "Concepto";
-                        column.ReadOnly = true;
-                        break;
-                }
+                    Name = "Estado",
+                    HeaderText = "Status",
+                    DataSource = new List<string> { "Pendiente", "Realizado" },
+                    Width = 150,
+                    DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox
+                };
+                dgvCitas.Columns.Add(comboBoxColumn);
             }
         }
 
-        private void LoadCitas()
+
+        private void LoadCitas(bool showUpcoming = false)
         {
             try
             {
                 using (SQLiteConnection conn = Database.GetConnection())
                 {
-                    if (conn == null)
-                    {
-                        throw new Exception("La conexión a la base de datos no está configurada.");
-                    }
-
                     conn.Open();
 
                     string estadoFiltro = cmbEstadoFiltro.SelectedItem.ToString();
                     string query = @"
-                        SELECT 
-                            Id, 
-                            Cliente, 
-                            datetime(Fecha) as Fecha, 
-                            Estado, 
-                            Concepto 
-                        FROM Citas";
+            SELECT 
+                Id, 
+                Cliente, 
+                datetime(Fecha) as Fecha, 
+                Hora,
+                Estado, 
+                Concepto 
+            FROM Citas";
 
-                    if (estadoFiltro != "Todos")
+                    if (estadoFiltro != "All")
                     {
                         query += " WHERE Estado = @Estado";
                     }
 
-                    query += " ORDER BY datetime(Fecha) DESC;";
+                    if (showUpcoming)
+                    {
+                        // Filtrar citas con fecha y hora mayor al momento actual
+                        query += (estadoFiltro == "All" ? " WHERE" : " AND") + " datetime(Fecha || ' ' || Hora) > datetime('now')";
+                    }
+
+                    query += " ORDER BY datetime(Fecha || ' ' || Hora) ASC;";
 
                     using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                     {
-                        if (estadoFiltro != "Todos")
+                        if (estadoFiltro != "All")
                         {
                             cmd.Parameters.AddWithValue("@Estado", estadoFiltro);
                         }
@@ -193,7 +206,7 @@ namespace MoneyManageApp
                             DataTable dt = new DataTable();
                             da.Fill(dt);
 
-                            dgvCitas.DataSource = null;
+                            dgvCitas.DataSource = null; // Desvincula la fuente de datos
                             dgvCitas.DataSource = dt;
 
                             ConfigureColumns();
@@ -203,46 +216,60 @@ namespace MoneyManageApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar las citas: {ex.Message}", "Error",
+                MessageBox.Show($"Error loading appointments: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        // Evento del botón "Próximas Citas"
+        private void BtnProximasCitas_Click(object sender, EventArgs e)
+        {
+            LoadCitas(showUpcoming: true); // Cargar citas próximas
+        }
+
+
         private void CmbEstadoFiltro_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadCitas();
+        }
+        private void DgvCitas_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dgvCitas.IsCurrentCellDirty && dgvCitas.CurrentCell.ColumnIndex == dgvCitas.Columns["Estado"].Index)
+            {
+                dgvCitas.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            }
         }
 
         private void DgvCitas_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgvCitas.Columns[e.ColumnIndex].Name == "Estado")
             {
-                var id = dgvCitas.Rows[e.RowIndex].Cells["Id"].Value;
-                var nuevoEstado = dgvCitas.Rows[e.RowIndex].Cells["Estado"].Value;
-
                 try
                 {
+                    var id = dgvCitas.Rows[e.RowIndex].Cells["Id"].Value;
+                    var nuevoEstado = dgvCitas.Rows[e.RowIndex].Cells["Estado"].Value;
+
                     using (SQLiteConnection conn = Database.GetConnection())
                     {
                         conn.Open();
                         string query = "UPDATE Citas SET Estado = @Estado WHERE Id = @Id";
                         using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                         {
-                            cmd.Parameters.AddWithValue("@Estado", nuevoEstado);
+                            cmd.Parameters.AddWithValue("@Estado", nuevoEstado ?? DBNull.Value);
                             cmd.Parameters.AddWithValue("@Id", id);
                             cmd.ExecuteNonQuery();
                         }
                     }
-                    MessageBox.Show("Estado actualizado correctamente.", "Información",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    MessageBox.Show("Status updated successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error al actualizar el estado: {ex.Message}", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error updating status: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
+
 
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
