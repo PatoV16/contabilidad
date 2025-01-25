@@ -260,10 +260,10 @@ namespace MoneyManageApp
             {
                 { "Sano", Color.White },
                 { "Caries", Color.Red },
-                { "Obturado", Color.FromArgb(192, 192, 192) },
+                { "Obturado", Color.RoyalBlue },
                 { "Ausente", Color.LightGray },
                 { "Corona", Color.Gold },
-                { "Puente", Color.RoyalBlue },
+                { "Puente", Color.Pink },
                 { "Implante", Color.DarkGreen }
             };
 
@@ -506,7 +506,7 @@ namespace MoneyManageApp
                     toothColor = Color.Red;
                     break;
                 case "obturado":
-                    toothColor = Color.Silver;
+                    toothColor = Color.RoyalBlue;
                     break;
                 case "ausente":
                     toothColor = Color.LightGray;
@@ -515,7 +515,7 @@ namespace MoneyManageApp
                     toothColor = Color.Gold;
                     break;
                 case "puente":
-                    toothColor = Color.Blue;
+                    toothColor = Color.Pink;
                     break;
                 case "implante":
                     toothColor = Color.Green;

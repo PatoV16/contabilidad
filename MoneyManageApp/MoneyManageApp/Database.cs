@@ -41,7 +41,8 @@ namespace MoneyManageApp
                     Direccion TEXT,
                     Ciudad TEXT,
                     Telefono TEXT,
-                    CorreoElectronico TEXT
+                    CorreoElectronico TEXT,
+                    AnioNacimiento TEXT NOT NULL
                 );";
 
                 string createIngresosEgresosTable = @"

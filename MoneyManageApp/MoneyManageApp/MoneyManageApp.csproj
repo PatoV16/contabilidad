@@ -151,6 +151,9 @@
     <Compile Include="FormMenu.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FormOdontgramaNino.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FormOdontograma.cs">
       <SubType>Form</SubType>
     </Compile>
