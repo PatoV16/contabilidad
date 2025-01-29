@@ -66,14 +66,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MoneyManageApp.exe" size="95216">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MoneyManageApp.exe" size="103920">
       <assemblyIdentity name="MoneyManageApp" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>P8CUcrTZoWlh/Z5DvUiO+xQ2DX4XuXx34V5trvVRQ+A=</dsig:DigestValue>
+        <dsig:DigestValue>wC3wvPX2w2DeooA7x55PYwF6VLUh6ffNfg2Kk7XDVpk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

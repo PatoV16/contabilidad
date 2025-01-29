@@ -21,6 +21,7 @@ namespace MoneyManageApp
         private Button btnBuscar;
         private Panel panelLeyenda;
         private string state;
+        private Button btnOdontogramaKid;
 
         public FormOdontograma()
         {
@@ -178,6 +179,19 @@ namespace MoneyManageApp
             };
             btnLimpiar.Click += BtnLimpiar_Click;
 
+
+            btnOdontogramaKid = new Button
+            {
+                Text = "Pediátrico",
+                Location = new Point(750, 15),
+                Width = 100,
+                Height = 30,
+                BackColor = Color.FromArgb(59, 130, 246),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            btnOdontogramaKid.Click += BtnOdontogramaKid_Click;
+
             // Create and setup legend panel
             panelLeyenda = new Panel
             {
@@ -235,7 +249,7 @@ namespace MoneyManageApp
 
             panelSuperior.Controls.AddRange(new Control[] {
                 lblPaciente, txtBuscar, btnBuscar, cmbPaciente,
-                btnGuardar, btnLimpiar
+                btnGuardar, btnLimpiar, btnOdontogramaKid,
             });
 
             this.Controls.AddRange(new Control[] {
@@ -244,6 +258,22 @@ namespace MoneyManageApp
                 panelNotas,
                 panelLeyenda
             });
+        }
+
+        private void AddKidsOdontogram()
+        {
+            // Create an instance of KidsOdontogram
+            var kidsOdontogram = new KidsOdontogram();
+
+            // Set the KidsOdontogram to be a child of the panel
+            kidsOdontogram.TopLevel = false;
+            kidsOdontogram.Dock = DockStyle.Fill;
+
+            // Add the KidsOdontogram to the panelOdontograma
+            panelOdontograma.Controls.Add(kidsOdontogram);
+
+            // Show the KidsOdontogram
+            kidsOdontogram.Show();
         }
 
         private void CreateLegend()
@@ -320,7 +350,15 @@ namespace MoneyManageApp
                 using (var connection = Database.GetConnection())
                 {
                     connection.Open();
-                    using (var command = new SQLiteCommand("SELECT CedulaRUC, NombreRazonSocial FROM Clientes ORDER BY NombreRazonSocial", connection))
+
+                    // Modificamos la consulta para solo obtener pacientes mayores de 18 años
+                    string query = @"
+                SELECT CedulaRUC, NombreRazonSocial 
+                FROM Clientes 
+                WHERE (julianday('now') - julianday(AnioNacimiento)) / 365.25 >= 18
+                ORDER BY NombreRazonSocial";
+
+                    using (var command = new SQLiteCommand(query, connection))
                     {
                         using (var reader = command.ExecuteReader())
                         {
@@ -346,6 +384,7 @@ namespace MoneyManageApp
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void InicializarDientes()
         {
@@ -468,6 +507,12 @@ namespace MoneyManageApp
             cmbPaciente.SelectedIndex = 0;
             txtEspecificaciones.Clear();
             txtObservaciones.Clear();
+        }
+
+        private void BtnOdontogramaKid_Click(object sender, EventArgs e)
+        {
+            KidsOdontogram form = new KidsOdontogram();
+            form.ShowDialog();
         }
     }
 

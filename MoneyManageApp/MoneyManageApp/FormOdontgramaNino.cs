@@ -1,39 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace MoneyManageApp
 {
     public class KidsOdontogram : Form
     {
-        private Dictionary<int, ToothControlForKids> babyTeeth;
+        private Dictionary<int, ToothControl> babyTeeth;
+        private ComboBox cmbPaciente;
 
         public KidsOdontogram()
         {
             InitializeComponent();
             SetupBabyTeeth();
+            CargarPacientes();
         }
+
         private void InitializeComponent()
         {
-            // Configuración principal del formulario
+            // Configuración de la ventana principal
             this.Text = "Odontograma Pediátrico";
-            this.Size = new Size(800, 600);
+            this.Size = new Size(900, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
 
-            // Panel principal
-            Panel panelPrincipal = new Panel
+            // Crear panel principal
+            Panel panelPrincipal = CrearPanelPrincipal();
+
+            // Crear título
+            Label lblTitulo = CrearTitulo();
+            // Crear panel de información del paciente
+            Panel panelPaciente = CrearPanelPaciente();
+
+            // Crear leyenda de estados
+            Panel panelLeyenda = CrearPanelLeyenda();
+
+            // Agregar controles al formulario
+            this.Controls.AddRange(new Control[]
             {
+        panelPaciente,
+        panelPrincipal,
+        panelLeyenda
+            });
+        }
+
+ 
+
+        private void CargarOdontogramaSeleccionado()
+        {
+            if (cmbPaciente.SelectedIndex > 0)
+            {
+                var pacienteSeleccionado = cmbPaciente.SelectedItem as ComboBoxItem;
+                CargarOdontograma(pacienteSeleccionado.Value);
+            }
+        }
+
+
+        private Panel CrearPanelPrincipal()
+        {
+            return new Panel
+            {
+                Name = "panelPrincipal",
                 Dock = DockStyle.Fill,
                 BackColor = Color.White
             };
+        }
 
-            // Título
-            Label lblTitulo = new Label
+        private Label CrearTitulo()
+        {
+            return new Label
             {
                 Text = "Odontograma Infantil",
                 Dock = DockStyle.Top,
@@ -41,44 +82,71 @@ namespace MoneyManageApp
                 Font = new Font("Arial", 16, FontStyle.Bold),
                 Height = 40
             };
+        }
 
-            // Panel de información del paciente
+        private Panel CrearPanelPaciente()
+        {
             Panel panelPaciente = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 60,
-                BackColor = Color.FromArgb(240, 240, 240)
+                Height = 80,
+                BackColor = Color.FromArgb(240, 240, 240),
+                Padding = new Padding(10)
             };
 
             Label lblNombre = new Label
             {
                 Text = "Nombre:",
                 Location = new Point(10, 20),
+                AutoSize = true,
+                Font = new Font("Arial", 10, FontStyle.Bold)
+            };
+
+            cmbPaciente = new ComboBox
+            {
+                Location = new Point(80, 15),
+                Width = 250,
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+
+            FlowLayoutPanel panelBotones = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 40,
+                FlowDirection = FlowDirection.LeftToRight,
                 AutoSize = true
             };
 
-            TextBox txtNombrePaciente = new TextBox
+            Button btnGuardar = new Button
             {
-                Location = new Point(70, 15),
-                Width = 300,
-                Text = "Nombre del Paciente"
+                Text = "Guardar Odontograma",
+                Width = 150
             };
+            btnGuardar.Click += (sender, e) => GuardarOdontograma();
 
-            Label lblEdad = new Label
+           ;
+
+            Button btnAgregarObservaciones = new Button
             {
-                Text = "Fecha de Nacimiento:",
-                Location = new Point(380, 20),
-                AutoSize = true
+                Text = "Añadir Observaciones",
+                Width = 150
             };
+            btnAgregarObservaciones.Click += (sender, e) => AbrirFormularioObservaciones();
 
-            DateTimePicker dtpNacimiento = new DateTimePicker
-            {
-                Location = new Point(530, 15),
-                Width = 150,
-                Format = DateTimePickerFormat.Short
-            };
+            panelBotones.Controls.AddRange(new Control[] { btnGuardar, btnAgregarObservaciones });
 
-            // Leyenda de estados
+            panelPaciente.Controls.Add(lblNombre);
+            panelPaciente.Controls.Add(cmbPaciente);
+            panelPaciente.Controls.Add(panelBotones);
+
+            return panelPaciente;
+        }
+
+
+
+
+        private Panel CrearPanelLeyenda()
+        {
             Panel panelLeyenda = new Panel
             {
                 Dock = DockStyle.Bottom,
@@ -118,159 +186,572 @@ namespace MoneyManageApp
                 xLeyenda += 100;
             }
 
-            // Agregar controles al panel de información del paciente
-            panelPaciente.Controls.AddRange(new Control[]
-            {
-        lblNombre, txtNombrePaciente, lblEdad, dtpNacimiento
-            });
-
-            // Agregar controles al formulario
-            this.Controls.AddRange(new Control[]
-            {
-        panelPrincipal,
-        lblTitulo,
-        panelPaciente,
-        panelLeyenda
-            });
+            return panelLeyenda;
         }
 
+        private void AbrirFormularioObservaciones()
+        {
+            using (Form formulario = new Form())
+            {
+                formulario.Text = "Añadir Observaciones/Especificaciones";
+                formulario.Size = new Size(400, 300);
+                formulario.StartPosition = FormStartPosition.CenterParent;
+
+                // Campos de texto para especificaciones y observaciones
+                Label lblEspecificaciones = CrearLabel("Especificaciones:", new Point(20, 20));
+                TextBox txtEspecificaciones = CrearTextBox(new Point(20, 50), 350, 80);
+
+                Label lblObservaciones = CrearLabel("Observaciones:", new Point(20, 150));
+                TextBox txtObservaciones = CrearTextBox(new Point(20, 180), 350, 50);
+
+                // Botón de guardar
+                Button btnGuardar = new Button
+                {
+                    Text = "Guardar",
+                    Location = new Point(150, 240),
+                    Width = 100
+                };
+                btnGuardar.Click += (sender, e) =>
+                {
+                    MessageBox.Show($"Especificaciones: {txtEspecificaciones.Text}\nObservaciones: {txtObservaciones.Text}",
+                        "Guardado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    formulario.Close();
+                };
+
+                formulario.Controls.AddRange(new Control[]
+                {
+            lblEspecificaciones, txtEspecificaciones,
+            lblObservaciones, txtObservaciones,
+            btnGuardar
+                });
+
+                formulario.ShowDialog();
+            }
+        }
+
+        // Métodos auxiliares para crear controles de forma reutilizable
+        private Label CrearLabel(string texto, Point location)
+        {
+            return new Label
+            {
+                Text = texto,
+                Location = location,
+                AutoSize = true
+            };
+        }
+
+        private TextBox CrearTextBox(Point location, int width, int height)
+        {
+            return new TextBox
+            {
+                Location = location,
+                Width = width,
+                Multiline = true,
+                Height = height
+            };
+        }
 
         private void SetupBabyTeeth()
         {
-            babyTeeth = new Dictionary<int, ToothControlForKids>();
-            int[] babyTeethNumbers = {
-                // Top baby teeth
-                51, 52, 53, 54, 55,
-                // Bottom baby teeth
-                81, 82, 83, 84, 85,
-                // Opposite side baby teeth
-                61, 62, 63, 64, 65,
-                71, 72, 73, 74, 75
-            };
+            babyTeeth = new Dictionary<int, ToothControl>();
+
+            // Números de dientes temporales según el sistema FDI organizados en dos filas
+            int[][] babyTeethNumbers = {
+        new int[] { 51, 52, 53, 54, 55, 61, 62, 63, 64, 65 }, // Superiores
+        new int[] { 71, 72, 73, 74, 75, 81, 82, 83, 84, 85 }  // Inferiores
+    };
 
             int toothWidth = 40;
-            int toothHeight = 80;
-            int spacing = 5;
+            int toothHeight = 60;
+            int spacing = 10;
             int startY = 100;
-            int centerX = (this.ClientSize.Width - (babyTeethNumbers.Length * (toothWidth + spacing))) / 2;
 
-            foreach (int toothNumber in babyTeethNumbers)
+            // Calcular posición inicial (centrado)
+            int centerX = (this.ClientSize.Width - (10 * (toothWidth + spacing))) / 2;
+
+            // Panel principal donde se agregarán los controles
+            var panel = Controls.Find("panelPrincipal", true).FirstOrDefault();
+            if (panel == null) throw new Exception("No se encontró el panel principal.");
+
+            for (int row = 0; row < babyTeethNumbers.Length; row++)
             {
-                var tooth = new ToothControlForKids(toothNumber)
+                for (int col = 0; col < babyTeethNumbers[row].Length; col++)
                 {
-                    Location = new Point(
-                        centerX + (Array.IndexOf(babyTeethNumbers, toothNumber) * (toothWidth + spacing)),
-                        startY
-                    ),
-                    Size = new Size(toothWidth, toothHeight)
+                    int toothNumber = babyTeethNumbers[row][col];
+
+                    // Crear control para el diente
+                    var tooth = new ToothControl(toothNumber, row == 0)
+                    {
+                        Location = new Point(
+                            centerX + (col * (toothWidth + spacing)),
+                            startY + (row * (toothHeight + spacing + 20))
+                        ),
+                        Size = new Size(toothWidth, toothHeight)
+                    };
+
+                    babyTeeth.Add(toothNumber, tooth);
+                    panel.Controls.Add(tooth); // Agregar al panel
+                }
+            }
+        }
+
+
+        public class ToothControl : UserControl
+        {
+            private int number;
+            private bool isUpper;
+            private string estado = "sano";
+            private Color colorDiente = Color.White;
+            private Color colorBorde = Color.Black;
+            private Color borderColor = Color.Black;
+
+            public string Estado => estado;
+
+            public ToothControl(int number, bool isUpper)
+            {
+                this.number = number;
+                this.isUpper = isUpper;
+                this.DoubleBuffered = true;
+                this.Click += ToothControl_Click;
+            }
+
+            public void ActualizarEstado(string nuevoEstado)
+            {
+                estado = nuevoEstado.ToLower();
+                ActualizarColor();
+                Invalidate();
+            }
+
+            private void ActualizarColor()
+            {
+                switch (estado)
+                {
+                    case "caries": colorDiente = Color.Red; break;
+                    case "tratado": colorDiente = Color.Green; break;
+                    case "sellante": colorDiente = Color.Blue; break;
+                    case "en erupción": colorDiente = Color.Yellow; break;
+                    default: colorDiente = Color.White; break;
+                }
+            }
+
+            private void ToothControl_Click(object sender, EventArgs e)
+            {
+                using (var formularioEstado = new FormularioEstadoDiente(number))
+                {
+                    if (formularioEstado.ShowDialog() == DialogResult.OK)
+                    {
+                        estado = formularioEstado.EstadoSeleccionado.ToLower();
+                        ActualizarColor();
+                        Invalidate();
+                    }
+                }
+            }
+
+            protected override void OnPaint(PaintEventArgs e)
+            {
+                base.OnPaint(e);
+                Graphics g = e.Graphics;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+                // Determinar color basado en el estado actual
+                Color colorDiente;
+                switch (estado.ToLower())
+                {
+                    case "caries":
+                        colorDiente = Color.Red;
+                        break;
+                    case "tratado":
+                        colorDiente = Color.Green;
+                        break;
+                    case "sellante":
+                        colorDiente = Color.Blue;
+                        break;
+                    case "en erupción":
+                        colorDiente = Color.Yellow;
+                        break;
+                    default:
+                        colorDiente = Color.White;
+                        break;
+                }
+
+                // Calcular dimensiones del diente
+                int margin = 4;
+                Rectangle toothRect = new Rectangle(
+                    margin,
+                    margin,
+                    Width - (margin * 2),
+                    Height - (margin * 2)
+                );
+
+                // Dibujar el contorno del diente
+                using (var toothBrush = new SolidBrush(colorDiente))
+                using (var borderPen = new Pen(borderColor, 2.0f))
+                {
+                    // Dibujar la corona
+                    int crownHeight = toothRect.Height / 2;
+                    Rectangle crownRect = new Rectangle(
+                        toothRect.X,
+                        isUpper ? toothRect.Y + crownHeight : toothRect.Y,
+                        toothRect.Width,
+                        crownHeight
+                    );
+
+                    // Dibujar la raíz
+                    Rectangle rootRect = new Rectangle(
+                        toothRect.X + (toothRect.Width / 3),
+                        isUpper ? toothRect.Y : toothRect.Y + crownHeight,
+                        toothRect.Width / 3,
+                        crownHeight
+                    );
+
+                    // Rellenar formas
+                    g.FillRectangle(toothBrush, crownRect);
+                    if (estado.ToLower() != "ausente")
+                    {
+                        g.FillRectangle(toothBrush, rootRect);
+                    }
+
+                    // Dibujar bordes
+                    g.DrawRectangle(borderPen, crownRect);
+                    if (estado.ToLower() != "ausente")
+                    {
+                        g.DrawRectangle(borderPen, rootRect);
+                    }
+
+                    // Dibujar número de diente
+                    using (var font = new Font("Arial", 10, FontStyle.Bold))
+                    using (var brush = new SolidBrush(Color.Black))
+                    {
+                        var textPos = new PointF(
+                            toothRect.X + (toothRect.Width - g.MeasureString(number.ToString(), font).Width) / 2,
+                            isUpper ? toothRect.Y : toothRect.Bottom - 20
+                        );
+                        g.DrawString(number.ToString(), font, brush, textPos);
+                    }
+                }
+            }
+
+
+            private class FormularioEstadoDiente : Form
+            {
+                private ComboBox cmbEstado;
+                public string EstadoSeleccionado { get; private set; }
+
+                public FormularioEstadoDiente(int numeroDiente)
+                {
+                    // Configuración del formulario
+                    this.Text = $"Estado del Diente {numeroDiente}";
+                    this.Size = new Size(350, 180);
+                    this.StartPosition = FormStartPosition.CenterParent;
+
+                    // ComboBox para seleccionar estado
+                    cmbEstado = new ComboBox
+                    {
+                        Location = new Point(20, 20),
+                        Width = 300,
+                        DropDownStyle = ComboBoxStyle.DropDownList
+                    };
+                    cmbEstado.Items.AddRange(new string[]
+                    {
+            "Sano",
+            "Caries",
+            "Tratado",
+            "Sellante",
+            "En Erupción"
+                    });
+                    cmbEstado.SelectedIndex = 0;
+
+                    // Botón Guardar
+                    Button btnGuardar = new Button
+                    {
+                        Text = "Guardar",
+                        Location = new Point(50, 70),
+                        Width = 100
+                    };
+                    btnGuardar.Click += (sender, e) =>
+                    {
+                        EstadoSeleccionado = cmbEstado.SelectedItem.ToString();
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    };
+
+                    // Botón Cancelar
+                    Button btnCancelar = new Button
+                    {
+                        Text = "Cancelar",
+                        Location = new Point(200, 70),
+                        Width = 100
+                    };
+                    btnCancelar.Click += (sender, e) =>
+                    {
+                        this.DialogResult = DialogResult.Cancel;
+                        this.Close();
+                    };
+
+                    // Agregar controles al formulario
+                    this.Controls.Add(cmbEstado);
+                    this.Controls.Add(btnGuardar);
+                    this.Controls.Add(btnCancelar);
+                }
+            }
+
+        }
+        private void CargarPacientes()
+        {
+            cmbPaciente.Items.Clear();
+            cmbPaciente.Items.Add("Seleccionar Paciente");
+
+            try
+            {
+                using (var connection = Database.GetConnection())
+                {
+                    connection.Open();
+                    using (var command = new SQLiteCommand(@"
+                SELECT CedulaRUC, NombreRazonSocial 
+                FROM Clientes 
+                WHERE (julianday('now') - julianday(AnioNacimiento)) / 365.25 < 14", connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string pacienteId = reader["CedulaRUC"].ToString();
+                                string nombrePaciente = reader["NombreRazonSocial"].ToString();
+
+                                cmbPaciente.Items.Add(new ComboBoxItem(nombrePaciente, pacienteId));
+                            }
+                        }
+                    }
+                }
+
+                cmbPaciente.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar pacientes: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Suscribirse al evento para cargar el odontograma cuando se seleccione un paciente
+            cmbPaciente.SelectedIndexChanged += cmbPaciente_SelectedIndexChanged;
+        }
+
+        private void cmbPaciente_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbPaciente.SelectedIndex > 0) // Evita la opción "Seleccionar Paciente"
+            {
+                var pacienteSeleccionado = cmbPaciente.SelectedItem as ComboBoxItem;
+                if (pacienteSeleccionado != null)
+                {
+                    CargarOdontograma(pacienteSeleccionado.Value);
+                }
+            }
+        }
+
+        private void CargarOdontograma(string pacienteId)
+        {
+            try
+            {
+                using (var connection = Database.GetConnection())
+                {
+                    connection.Open();
+                    using (var command = new SQLiteCommand(@"
+                        SELECT DientesEstado 
+                        FROM Odontogramas 
+                        WHERE ClienteId = @ClienteId", connection))
+                    {
+                        command.Parameters.AddWithValue("@ClienteId", pacienteId);
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                string dientesEstadoJson = reader["DientesEstado"].ToString();
+                                var dientesEstado = JsonConvert.DeserializeObject<Dictionary<int, string>>(dientesEstadoJson);
+
+                                foreach (var tooth in babyTeeth)
+                                {
+                                    if (dientesEstado.ContainsKey(tooth.Key))
+                                    {
+                                        tooth.Value.ActualizarEstado(dientesEstado[tooth.Key]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar odontograma: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        public class ComboBoxItem
+        {
+            public string Text { get; set; }
+            public string Value { get; set; }
+
+            public ComboBoxItem(string text, string value)
+            {
+                Text = text;
+                Value = value;
+            }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+        private void GuardarOdontograma()
+        {
+            // Validate patient selection
+            if (cmbPaciente.SelectedIndex <= 0)
+            {
+                MessageBox.Show("Seleccione un paciente", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Get selected patient ID
+            var pacienteSeleccionado = cmbPaciente.SelectedItem as ComboBoxItem;
+            if (pacienteSeleccionado == null)
+            {
+                MessageBox.Show("Paciente inválido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Open observations form to get specs and observations
+            string especificaciones = "";
+            string observaciones = "";
+            using (Form formulario = new Form())
+            {
+                formulario.Text = "Añadir Especificaciones y Observaciones";
+                formulario.Size = new Size(400, 300);
+                formulario.StartPosition = FormStartPosition.CenterParent;
+
+                Label lblEspecificaciones = new Label
+                {
+                    Text = "Cita Actual:",
+                    Location = new Point(20, 20),
+                    AutoSize = true
                 };
-                babyTeeth.Add(toothNumber, tooth);
-                this.Controls.Add(tooth);
-            }
-        }
-    }
 
-    public class ToothControlForKids : UserControl
-    {
-        private int toothNumber;
-        private string toothState = "healthy";
-        private Color toothColor = Color.White;
-
-        public ToothControlForKids(int toothNumber)
-        {
-            this.toothNumber = toothNumber;
-            this.Click += ToothControl_Click;
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-            Graphics g = e.Graphics;
-
-            // Draw tooth with color based on state
-            using (var brush = new SolidBrush(toothColor))
-            using (var pen = new Pen(Color.Black))
-            {
-                g.FillRectangle(brush, ClientRectangle);
-                g.DrawRectangle(pen, ClientRectangle);
-
-                // Show tooth number
-                using (var font = new Font("Comic Sans MS", 10))
+                TextBox txtEspecificaciones = new TextBox
                 {
-                    g.DrawString(toothNumber.ToString(), font, Brushes.Black,
-                        new PointF(Width / 2 - 10, Height - 20));
+                    Location = new Point(20, 50),
+                    Width = 350,
+                    Multiline = true,
+                    Height = 80
+                };
+
+                Label lblObservaciones = new Label
+                {
+                    Text = "Proxima Cita:",
+                    Location = new Point(20, 150),
+                    AutoSize = true
+                };
+
+                TextBox txtObservaciones = new TextBox
+                {
+                    Location = new Point(20, 180),
+                    Width = 350,
+                    Multiline = true,
+                    Height = 50
+                };
+
+                Button btnGuardar = new Button
+                {
+                    Text = "Guardar",
+                    Location = new Point(150, 240),
+                    Width = 100,
+                    DialogResult = DialogResult.OK
+                };
+
+                formulario.Controls.AddRange(new Control[]
+                {
+            lblEspecificaciones, txtEspecificaciones,
+            lblObservaciones, txtObservaciones,
+            btnGuardar
+                });
+
+                if (formulario.ShowDialog() == DialogResult.OK)
+                {
+                    especificaciones = txtEspecificaciones.Text;
+                    observaciones = txtObservaciones.Text;
+                }
+                else
+                {
+                    return; // User cancelled
                 }
             }
-        }
 
-        private void ToothControl_Click(object sender, EventArgs e)
-        {
-            using (var toothStatusForm = new ToothStatusFormForKids(toothNumber))
+            // Prepare tooth states dictionary
+            var dientesEstado = babyTeeth.ToDictionary(
+                tooth => tooth.Key,
+                tooth => tooth.Value.Estado
+            );
+
+            try
             {
-                if (toothStatusForm.ShowDialog() == DialogResult.OK)
+                using (var connection = Database.GetConnection())
                 {
-                    toothState = toothStatusForm.SelectedStatus.ToLower();
-                    UpdateToothColor();
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        using (var command = new SQLiteCommand(connection))
+                        {
+                            // Check if an odontogram already exists for this patient
+                            command.CommandText = @"
+                        SELECT Id FROM Odontogramas 
+                        WHERE ClienteId = @ClienteId";
+                            command.Parameters.AddWithValue("@ClienteId", pacienteSeleccionado.Value);
+                            var existingRecord = command.ExecuteScalar();
+
+                            // Prepare JSON for tooth states
+                            string dientesEstadoJson = JsonConvert.SerializeObject(dientesEstado);
+
+                            if (existingRecord != null)
+                            {
+                                // Update existing record
+                                command.CommandText = @"
+                            UPDATE Odontogramas 
+                            SET FechaRegistro = @FechaRegistro, 
+                                DientesEstado = @DientesEstado, 
+                                Especificaciones = @Especificaciones,
+                                Observaciones = @Observaciones 
+                            WHERE ClienteId = @ClienteId";
+                            }
+                            else
+                            {
+                                // Insert new record
+                                command.CommandText = @"
+                            INSERT INTO Odontogramas 
+                            (ClienteId, FechaRegistro, DientesEstado, Especificaciones, Observaciones) 
+                            VALUES (@ClienteId, @FechaRegistro, @DientesEstado, @Especificaciones, @Observaciones)";
+                            }
+
+                            // Add parameters
+                            command.Parameters.AddWithValue("@FechaRegistro", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                            command.Parameters.AddWithValue("@DientesEstado", dientesEstadoJson);
+                            command.Parameters.AddWithValue("@Especificaciones", especificaciones);
+                            command.Parameters.AddWithValue("@Observaciones", observaciones);
+
+                            command.ExecuteNonQuery();
+                        }
+                        transaction.Commit();
+                    }
                 }
+
+                MessageBox.Show("Odontograma guardado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al guardar odontograma: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
-        private void UpdateToothColor()
-        {
-            switch (toothState)
-            {
-                case "cavity": toothColor = Color.Red; break;
-                case "healthy": toothColor = Color.White; break;
-                case "treated": toothColor = Color.Green; break;
-                case "sealed": toothColor = Color.Blue; break;
-                case "growing": toothColor = Color.Yellow; break;
-                default: toothColor = Color.White; break;
-            }
-            Invalidate();
-        }
-    }
+       
 
-    public class ToothStatusFormForKids : Form
-    {
-        private ComboBox cmbStatus;
-        public string SelectedStatus { get; private set; }
-
-        public ToothStatusFormForKids(int toothNumber)
-        {
-            this.Text = $"Choose the Status for Tooth {toothNumber}";
-            this.Size = new Size(300, 200);
-            this.StartPosition = FormStartPosition.CenterParent;
-
-            cmbStatus = new ComboBox
-            {
-                Location = new Point(20, 20),
-                Width = 250,
-                DropDownStyle = ComboBoxStyle.DropDownList
-            };
-            cmbStatus.Items.AddRange(new string[] {
-                "Healthy", "Cavity", "Treated", "Sealed", "Growing"
-            });
-            cmbStatus.SelectedIndex = 0;
-
-            var btnAccept = new Button
-            {
-                Text = "OK",
-                DialogResult = DialogResult.OK,
-                Location = new Point(50, 100)
-            };
-
-            btnAccept.Click += (s, e) => {
-                SelectedStatus = cmbStatus.SelectedItem.ToString();
-            };
-
-            var btnCancel = new Button
-            {
-                Text = "Cancel",
-                DialogResult = DialogResult.Cancel,
-                Location = new Point(150, 100)
-            };
-
-            this.Controls.AddRange(new Control[] { cmbStatus, btnAccept, btnCancel });
-        }
     }
 }
