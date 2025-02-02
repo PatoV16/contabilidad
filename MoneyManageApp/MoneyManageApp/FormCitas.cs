@@ -16,6 +16,8 @@ namespace MoneyManageApp
         private Panel panelBotones;
         private Panel panelGrid;
         private Button btnProximasCitas;
+        private MonthCalendar monthCalendar;
+        private Panel panelCalendario;
 
         public FormCitas()
         {
@@ -43,6 +45,7 @@ namespace MoneyManageApp
                 RowTemplate = { Height = 40 } // Increase row height
             };
             dgvCitas.CellValueChanged += DgvCitas_CellValueChanged;
+            dgvCitas.CurrentCellDirtyStateChanged += DgvCitas_CurrentCellDirtyStateChanged;
 
             // Appointment status filter
             cmbEstadoFiltro = new ComboBox
@@ -52,7 +55,7 @@ namespace MoneyManageApp
                 Location = new Point(500, 10),
                 Font = new Font("Segoe UI", 12)
             };
-            cmbEstadoFiltro.Items.AddRange(new string[] {  "Pendiente", "Realizado" });
+            cmbEstadoFiltro.Items.AddRange(new string[] { "Pendiente", "Realizado" });
             cmbEstadoFiltro.SelectedIndex = 0;
             cmbEstadoFiltro.SelectedIndexChanged += CmbEstadoFiltro_SelectedIndexChanged;
 
@@ -102,6 +105,8 @@ namespace MoneyManageApp
                 Padding = new Padding(20)
             };
             panelGrid.Controls.Add(dgvCitas);
+
+            // Próximas citas button
             btnProximasCitas = new Button
             {
                 Text = "Próxima cita",
@@ -116,6 +121,30 @@ namespace MoneyManageApp
             btnProximasCitas.Click += BtnProximasCitas_Click;
 
             panelBotones.Controls.Add(btnProximasCitas); // Añadir al panel de botones
+
+            // MonthCalendar for appointments
+            monthCalendar = new MonthCalendar
+            {
+                Dock = DockStyle.Fill,
+                MaxSelectionCount = 1, // Permitir selección de una sola fecha
+                BackColor = Color.White,
+                ForeColor = Color.Black,
+                TitleBackColor = Color.FromArgb(52, 152, 219),
+                TitleForeColor = Color.White,
+                TrailingForeColor = Color.Gray,
+                CalendarDimensions = new Size(2, 1) // Mostrar dos meses
+            };
+            monthCalendar.DateSelected += MonthCalendar_DateSelected;
+
+            // Calendar panel
+            panelCalendario = new Panel
+            {
+                Dock = DockStyle.Left,
+                Width = 400,
+                Padding = new Padding(20),
+                BackColor = Color.FromArgb(245, 245, 245)
+            };
+            panelCalendario.Controls.Add(monthCalendar);
         }
 
         private void InitializeComponent()
@@ -123,12 +152,13 @@ namespace MoneyManageApp
             this.SuspendLayout();
 
             this.Text = "Calendario de citas dentales";
-            this.Size = new Size(800, 600);
+            this.Size = new Size(1200, 600); // Ajustar el tamaño del formulario
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.FromArgb(245, 245, 245);
 
             this.Controls.Add(panelGrid);
             this.Controls.Add(panelBotones);
+            this.Controls.Add(panelCalendario); // Añadir el panel del calendario
 
             this.ResumeLayout(false);
 
@@ -140,29 +170,26 @@ namespace MoneyManageApp
             if (dgvCitas.Columns.Count == 0)
             {
                 dgvCitas.Columns.Add("Id", "ID");
-                dgvCitas.Columns.Add("Cliente", "Pacinte");
+                dgvCitas.Columns.Add("Cliente", "Paciente");
                 dgvCitas.Columns.Add("Fecha", "Fecha");
                 dgvCitas.Columns.Add("Hora", "Hora");
                 dgvCitas.Columns.Add("Concepto", "Concepto");
-            }
 
-            if (dgvCitas.Columns["Estado"] is null)
-            {
-                // Crear y agregar la columna ComboBox si no existe
+                // Crear y agregar la columna ComboBox para el estado
                 var comboBoxColumn = new DataGridViewComboBoxColumn
                 {
                     Name = "Estado",
-                    HeaderText = "Status",
-                    DataSource = new List<string> { "Pendiente", "Realizado" },
+                    HeaderText = "Estado",
+                    DataSource = new List<string> { "Pendiente", "Realizado" }, // Opciones del ComboBox
                     Width = 150,
-                    DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox
+                    DisplayStyle = DataGridViewComboBoxDisplayStyle.ComboBox,
+                    FlatStyle = FlatStyle.Flat
                 };
                 dgvCitas.Columns.Add(comboBoxColumn);
             }
         }
 
-
-        private void LoadCitas(bool showUpcoming = false)
+        private void LoadCitas(bool showUpcoming = false, DateTime? fecha = null)
         {
             try
             {
@@ -172,24 +199,29 @@ namespace MoneyManageApp
 
                     string estadoFiltro = cmbEstadoFiltro.SelectedItem.ToString();
                     string query = @"
-            SELECT 
-                Id, 
-                Cliente, 
-                datetime(Fecha) as Fecha, 
-                Hora,
-                Estado, 
-                Concepto 
-            FROM Citas";
+                        SELECT 
+                            Id, 
+                            Cliente, 
+                            datetime(Fecha) as Fecha, 
+                            Hora,
+                            Estado, 
+                            Concepto 
+                        FROM Citas";
 
                     if (estadoFiltro != "All")
                     {
                         query += " WHERE Estado = @Estado";
                     }
 
+                    if (fecha.HasValue)
+                    {
+                        query += (estadoFiltro == "All" ? " WHERE" : " AND") + " date(Fecha) = @Fecha";
+                    }
+
                     if (showUpcoming)
                     {
                         // Filtrar citas con fecha y hora mayor al momento actual
-                        query += (estadoFiltro == "All" ? " WHERE" : " AND") + " datetime(Fecha || ' ' || Hora) > datetime('now')";
+                        query += (estadoFiltro == "All" && !fecha.HasValue ? " WHERE" : " AND") + " datetime(Fecha || ' ' || Hora) > datetime('now')";
                     }
 
                     query += " ORDER BY datetime(Fecha || ' ' || Hora) ASC;";
@@ -199,6 +231,11 @@ namespace MoneyManageApp
                         if (estadoFiltro != "All")
                         {
                             cmd.Parameters.AddWithValue("@Estado", estadoFiltro);
+                        }
+
+                        if (fecha.HasValue)
+                        {
+                            cmd.Parameters.AddWithValue("@Fecha", fecha.Value.ToString("yyyy-MM-dd"));
                         }
 
                         using (SQLiteDataAdapter da = new SQLiteDataAdapter(cmd))
@@ -227,11 +264,11 @@ namespace MoneyManageApp
             LoadCitas(showUpcoming: true); // Cargar citas próximas
         }
 
-
         private void CmbEstadoFiltro_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadCitas();
         }
+
         private void DgvCitas_CurrentCellDirtyStateChanged(object sender, EventArgs e)
         {
             if (dgvCitas.IsCurrentCellDirty && dgvCitas.CurrentCell.ColumnIndex == dgvCitas.Columns["Estado"].Index)
@@ -261,15 +298,14 @@ namespace MoneyManageApp
                         }
                     }
 
-                    MessageBox.Show("Status updated successfully.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Estado actualizado correctamente.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error updating status: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Error al actualizar el estado: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
-
 
         private void BtnRefresh_Click(object sender, EventArgs e)
         {
@@ -289,7 +325,14 @@ namespace MoneyManageApp
 
         private void FormCitas_Load(object sender, EventArgs e)
         {
-            LoadCitas();
+            // No cargar citas al inicio, esperar a que el usuario seleccione una fecha
+            // LoadCitas();
+        }
+
+        private void MonthCalendar_DateSelected(object sender, DateRangeEventArgs e)
+        {
+            DateTime fechaSeleccionada = e.Start;
+            LoadCitas(fecha: fechaSeleccionada); // Filtrar citas por fecha seleccionada
         }
     }
 }
