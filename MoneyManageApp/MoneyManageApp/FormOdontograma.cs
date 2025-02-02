@@ -103,7 +103,7 @@ namespace MoneyManageApp
         private void InitializeComponent()
         {
             this.Text = "Odontograma";
-            this.Size = new Size(1200, 800); // Increased width to accommodate legend
+            this.Size = new Size(1300, 800); // Increased width to accommodate legend
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
 
@@ -119,7 +119,8 @@ namespace MoneyManageApp
                 Dock = DockStyle.Top,
                 Height = 60,
                 Padding = new Padding(10),
-                BackColor = Color.FromArgb(243, 244, 246)
+                BackColor = Color.FromArgb(243, 244, 246),
+                AutoSize = true // Permitir que el panel se ajuste al contenido
             };
 
             lblPaciente = new Label
@@ -196,12 +197,13 @@ namespace MoneyManageApp
             btnFotos = new Button
             {
                 Text = "Fotos",
-                Location = new Point(860, 15),  // 750 + 100 + 10
+                Location = new Point(860, 15),
                 Width = 100,
                 Height = 30,
                 BackColor = Color.FromArgb(59, 130, 246),
                 ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                Visible = true // Asegurarnos que sea visible
             };
             btnFotos.Click += BtnFotos_Click;
 
@@ -699,8 +701,19 @@ namespace MoneyManageApp
     {
         public string Value { get; set; }
         public string Display { get; set; }
+        public string Id { get; internal set; }
+
+        // Constructor sin parámetros
+        public ComboBoxItem() { }
+
+        // Constructor con parámetros (si lo necesitas)
+        public ComboBoxItem(string id, string display)
+        {
+            Value = id;
+            Display = display;
+        }
+
         public override string ToString() => Display;
     }
 
-   
 }

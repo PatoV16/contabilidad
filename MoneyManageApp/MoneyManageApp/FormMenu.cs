@@ -305,8 +305,10 @@ namespace MoneyManageApp
                             DELETE FROM Salidas; 
                             DELETE FROM RecaudosDiarios;
                             DELETE FROM Odontogramas;
-                            DELETE FROM Citas";
-                            
+                            DELETE FROM Citas;
+                            DELETE FROM Fotos";
+
+
                         SQLiteCommand cmd = new SQLiteCommand(queryBorrar, conn);
                         cmd.ExecuteNonQuery();
                         MessageBox.Show(

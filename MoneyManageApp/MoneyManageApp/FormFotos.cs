@@ -20,6 +20,7 @@ namespace MoneyManageApp
         public FormFotos()
         {
             InitializeComponent();
+            AsegurarTablaFotos(); // Añadir esta línea
             CargarPacientes();
         }
 
@@ -47,11 +48,18 @@ namespace MoneyManageApp
             this.cmbPacientes.SelectedIndexChanged += new EventHandler(CmbPacientes_SelectedIndexChanged);
 
             // Button
-            this.btnAgregarFoto.Text = "Agregar Foto";
-            this.btnAgregarFoto.Location = new Point(340, 45);
-            this.btnAgregarFoto.Size = new Size(120, 25);
+            // Button
+            this.btnAgregarFoto = new Button
+            {
+                Text = "Agregar Foto",
+                Location = new Point(340, 45),
+                Size = new Size(120, 25),
+                Enabled = false, // Inicialmente deshabilitado
+                BackColor = Color.FromArgb(59, 130, 246),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
             this.btnAgregarFoto.Click += new EventHandler(BtnAgregarFoto_Click);
-            this.btnAgregarFoto.Enabled = false;
 
             // FlowLayoutPanel for photos
             this.flowLayoutPhotos.Location = new Point(20, 90);
@@ -68,35 +76,88 @@ namespace MoneyManageApp
 
         private void CargarPacientes()
         {
-            cmbPacientes.Items.Clear();
-            using (SQLiteConnection conn = new SQLiteConnection(dbConnection))
+            try
             {
-                conn.Open();
-                string query = "SELECT CedulaRUC, NombreRazonSocial FROM Clientes ORDER BY NombreRazonSocial";
-                using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                cmbPacientes.Items.Clear();
+                using (SQLiteConnection conn = new SQLiteConnection(dbConnection))
                 {
-                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    conn.Open();
+                    string query = "SELECT CedulaRUC, NombreRazonSocial FROM Clientes ORDER BY NombreRazonSocial";
+                    using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                     {
-                        while (reader.Read())
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
                         {
-                            string id = reader["CedulaRUC"].ToString();
-                            string nombre = reader["NombreRazonSocial"].ToString();
-                            var item = new ComboBoxItem(id, $"{nombre} - {id}");
-                            cmbPacientes.Items.Add(item);
+                            // Agregar item por defecto
+                            cmbPacientes.Items.Add(new ComboBoxItem("", "Seleccione un paciente..."));
+
+                            while (reader.Read())
+                            {
+                                string id = reader["CedulaRUC"].ToString();
+                                string nombre = reader["NombreRazonSocial"].ToString();
+
+
+                                var item = new ComboBoxItem(id, nombre);
+                                cmbPacientes.Items.Add(item);
+                            }
                         }
                     }
                 }
+                // Seleccionar el primer item (opción por defecto)
+                if (cmbPacientes.Items.Count > 0)
+                    cmbPacientes.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar pacientes: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void CmbPacientes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbPacientes.SelectedItem != null)
+            try
             {
-                var selected = (ComboBoxItem)cmbPacientes.SelectedItem;
-                selectedPatientId = selected.Id;
-                btnAgregarFoto.Enabled = true;
-                CargarFotos(selectedPatientId);
+                if (cmbPacientes.SelectedItem != null)
+                {
+                    var selected = (ComboBoxItem)cmbPacientes.SelectedItem;
+                    selectedPatientId = selected.Id;
+
+
+                    // Habilitar botón solo si hay un ID válido
+                    btnAgregarFoto.Enabled = !string.IsNullOrEmpty(selectedPatientId);
+
+                    if (!string.IsNullOrEmpty(selectedPatientId))
+                    {
+                        CargarFotos(selectedPatientId);
+                    }
+                }
+                else
+                {
+                    btnAgregarFoto.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al seleccionar paciente: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Asegúrate de que la clase ComboBoxItem esté definida así:
+        public class ComboBoxItem
+        {
+            public string Id { get; private set; }
+            public string Text { get; private set; }
+
+            public ComboBoxItem(string id, string text)
+            {
+                Id = id;
+                Text = text;
+            }
+
+            public override string ToString()
+            {
+                return Text;
             }
         }
 
@@ -154,7 +215,13 @@ namespace MoneyManageApp
 
         private void BtnAgregarFoto_Click(object sender, EventArgs e)
         {
-            if (selectedPatientId == null) return;
+            // Primero verificamos que tenemos un paciente seleccionado
+            if (selectedPatientId == null || string.IsNullOrEmpty(selectedPatientId))
+            {
+                MessageBox.Show("Por favor, seleccione un paciente primero.", "Aviso",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
@@ -165,14 +232,34 @@ namespace MoneyManageApp
                 {
                     try
                     {
+                        // Verificamos que el archivo existe
+                        if (!File.Exists(ofd.FileName))
+                        {
+                            MessageBox.Show("El archivo seleccionado no existe.");
+                            return;
+                        }
+
                         byte[] imageBytes = File.ReadAllBytes(ofd.FileName);
+
+                        // Verificamos que tenemos datos de imagen
+                        if (imageBytes == null || imageBytes.Length == 0)
+                        {
+                            MessageBox.Show("No se pudo leer la imagen seleccionada.");
+                            return;
+                        }
+
+                        // Verificación adicional del ID del paciente antes de guardar
+                        Console.WriteLine($"CedulaRUC a guardar: {selectedPatientId}"); // Para debugging
+
                         GuardarFoto(selectedPatientId, imageBytes);
                         CargarFotos(selectedPatientId);
+
+                        MessageBox.Show("Imagen guardada exitosamente.");
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Error al cargar la imagen: {ex.Message}", "Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Error detallado: {ex.Message}\nStack Trace: {ex.StackTrace}",
+                            "Error al guardar la foto", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
@@ -180,16 +267,44 @@ namespace MoneyManageApp
 
         private void GuardarFoto(string cedulaRUC, byte[] fotoBytes)
         {
+            // Verificación adicional
+            if (string.IsNullOrEmpty(cedulaRUC))
+            {
+                throw new ArgumentException("La cédula/RUC no puede estar vacía.");
+            }
+
+            if (fotoBytes == null || fotoBytes.Length == 0)
+            {
+                throw new ArgumentException("Los datos de la imagen no pueden estar vacíos.");
+            }
+
             using (SQLiteConnection conn = new SQLiteConnection(dbConnection))
             {
                 conn.Open();
                 string query = @"INSERT INTO Fotos (CedulaRUC, Foto, FechaSubida) 
-                               VALUES (@cedula, @foto, @fecha)";
+                        VALUES (@cedula, @foto, @fecha)";
+
                 using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                 {
-                    cmd.Parameters.AddWithValue("@cedula", cedulaRUC);
-                    cmd.Parameters.AddWithValue("@foto", fotoBytes);
-                    cmd.Parameters.AddWithValue("@fecha", DateTime.Now.ToString("yyyy-MM-dd"));
+                    // Añadimos los parámetros de manera más explícita
+                    var paramCedula = new SQLiteParameter("@cedula", System.Data.DbType.String)
+                    {
+                        Value = cedulaRUC
+                    };
+                    cmd.Parameters.Add(paramCedula);
+
+                    var paramFoto = new SQLiteParameter("@foto", System.Data.DbType.Binary)
+                    {
+                        Value = fotoBytes
+                    };
+                    cmd.Parameters.Add(paramFoto);
+
+                    var paramFecha = new SQLiteParameter("@fecha", System.Data.DbType.String)
+                    {
+                        Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                    };
+                    cmd.Parameters.Add(paramFecha);
+
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -211,15 +326,35 @@ namespace MoneyManageApp
             imageForm.Controls.Add(fullPb);
             imageForm.ShowDialog();
         }
+        // Añade este método y llámalo en el constructor del formulario
+        private void AsegurarTablaFotos()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(dbConnection))
+            {
+                conn.Open();
+                string createTableQuery = @"
+            CREATE TABLE IF NOT EXISTS Fotos (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                CedulaRUC TEXT NOT NULL,
+                Foto BLOB NOT NULL,
+                FechaSubida TEXT NOT NULL,
+                FOREIGN KEY(CedulaRUC) REFERENCES Clientes(CedulaRUC)
+            )";
+                using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, conn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 
     // Helper class for ComboBox items
-    public class ComboBoxItem
+    public class FotoComboBoxItem  // Nombre diferente
     {
         public string Id { get; set; }
         public string Text { get; set; }
 
-        public ComboBoxItem(string id, string text)
+        public FotoComboBoxItem(string id, string text)
         {
             Id = id;
             Text = text;
