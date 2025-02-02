@@ -126,7 +126,14 @@ namespace MoneyManageApp
                     DientesEstado TEXT NOT NULL, -- JSON string containing teeth states
                     FOREIGN KEY(ClienteId) REFERENCES Clientes(CedulaRUC)
                 );";
-
+                string createFotosTable = @"
+                 CREATE TABLE IF NOT EXISTS Fotos (
+                       Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                       CedulaRUC TEXT NOT NULL,
+                       Foto BLOB NOT NULL,  -- La foto se almacenará como BLOB
+                       FechaSubida TEXT NOT NULL,
+                       FOREIGN KEY(CedulaRUC) REFERENCES Clientes(CedulaRUC)
+                );";
              
 
 
@@ -149,6 +156,8 @@ namespace MoneyManageApp
                     command.CommandText = createOdontogramasTable;
                     command.ExecuteNonQuery();
                     command.CommandText = createCitasTable;
+                    command.ExecuteNonQuery();
+                    command.CommandText = createFotosTable;
                     command.ExecuteNonQuery();
                 }
             }

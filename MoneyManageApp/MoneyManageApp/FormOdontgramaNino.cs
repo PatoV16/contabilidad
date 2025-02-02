@@ -14,6 +14,8 @@ namespace MoneyManageApp
     {
         private Dictionary<int, ToothControl> babyTeeth;
         private ComboBox cmbPaciente;
+        private TextBox txtEspecificaciones;
+        private TextBox txtObservaciones;
 
         public KidsOdontogram()
         {
@@ -21,12 +23,108 @@ namespace MoneyManageApp
             SetupBabyTeeth();
             CargarPacientes();
         }
+        private void CargarPacientes()
+        {
+            cmbPaciente.Items.Clear();
+            cmbPaciente.Items.Add("Seleccionar Paciente");
 
+            try
+            {
+                using (var connection = Database.GetConnection())
+                {
+                    connection.Open();
+                    using (var command = new SQLiteCommand(@"
+                SELECT CedulaRUC, NombreRazonSocial 
+                FROM Clientes 
+                WHERE (julianday('now') - julianday(AnioNacimiento)) / 365.25 < 14", connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string pacienteId = reader["CedulaRUC"].ToString();
+                                string nombrePaciente = reader["NombreRazonSocial"].ToString();
+
+                                cmbPaciente.Items.Add(new ComboBoxItem(nombrePaciente, pacienteId));
+                            }
+                        }
+                    }
+                }
+
+                cmbPaciente.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar pacientes: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Suscribirse al evento para cargar el odontograma cuando se seleccione un paciente
+            cmbPaciente.SelectedIndexChanged += cmbPaciente_SelectedIndexChanged;
+        }
+
+        private void CargarOdontograma(string pacienteId)
+        {
+            try
+            {
+                using (var connection = Database.GetConnection())
+                {
+                    connection.Open();
+                    using (var command = new SQLiteCommand(@"
+                SELECT DientesEstado, Especificaciones, Observaciones 
+                FROM Odontogramas 
+                WHERE ClienteId = @ClienteId 
+                ORDER BY FechaRegistro DESC LIMIT 1", connection))
+                    {
+                        command.Parameters.AddWithValue("@ClienteId", pacienteId);
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                // Cargar estado de los dientes
+                                string dientesEstadoJson = reader["DientesEstado"]?.ToString();
+                                if (!string.IsNullOrEmpty(dientesEstadoJson))
+                                {
+                                    var dientesEstado = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int, string>>(dientesEstadoJson);
+                                    foreach (var diente in dientesEstado)
+                                    {
+                                        if (babyTeeth.ContainsKey(diente.Key))
+                                        {
+                                            babyTeeth[diente.Key].ActualizarEstado(diente.Value);
+                                        }
+                                    }
+                                }
+
+                                // Cargar especificaciones y observaciones con manejo de null
+                                txtEspecificaciones.Text = reader["Especificaciones"] != DBNull.Value ?
+                                    reader["Especificaciones"].ToString() : string.Empty;
+
+                                txtObservaciones.Text = reader["Observaciones"] != DBNull.Value ?
+                                    reader["Observaciones"].ToString() : string.Empty;
+                            }
+                            else
+                            {
+                                MessageBox.Show("No se encontró un odontograma registrado para este paciente.",
+                                    "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                // Limpiar los campos
+                                txtEspecificaciones.Clear();
+                                txtObservaciones.Clear();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar el odontograma: {ex.Message}",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void InitializeComponent()
         {
             // Configuración de la ventana principal
             this.Text = "Odontograma Pediátrico";
-            this.Size = new Size(900, 700);
+            this.Size = new Size(900, 700);  // Tamaño de la ventana
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
 
@@ -35,31 +133,69 @@ namespace MoneyManageApp
 
             // Crear título
             Label lblTitulo = CrearTitulo();
+
             // Crear panel de información del paciente
             Panel panelPaciente = CrearPanelPaciente();
+
+            // Crear panelNotas en la parte inferior del formulario
+            Panel panelNotas = new Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 200,
+                Padding = new Padding(20)
+            };
+
+            Label lblEspecificaciones = new Label
+            {
+                Text = "CITA ACTUAL",
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Location = new Point(20, 10)
+            };
+
+            txtEspecificaciones = new TextBox
+            {
+                Multiline = true,
+                Location = new Point(20, 30),
+                Size = new Size(450, 150),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            Label lblObservaciones = new Label
+            {
+                Text = "PROXIMA CITA",
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Location = new Point(490, 10)
+            };
+
+            txtObservaciones = new TextBox
+            {
+                Multiline = true,
+                Location = new Point(490, 30),
+                Size = new Size(450, 150),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            panelNotas.Controls.AddRange(new Control[] {
+                lblEspecificaciones, txtEspecificaciones,
+                lblObservaciones, txtObservaciones
+            });
+
 
             // Crear leyenda de estados
             Panel panelLeyenda = CrearPanelLeyenda();
 
             // Agregar controles al formulario
-            this.Controls.AddRange(new Control[]
-            {
-        panelPaciente,
-        panelPrincipal,
-        panelLeyenda
-            });
+            this.Controls.Add(panelPaciente);
+            this.Controls.Add(panelPrincipal);
+            this.Controls.Add(panelLeyenda);
+            this.Controls.Add(panelNotas);  // Agregar panelNotas al formulario
+
+            // Forzar actualización de la UI
+            this.Refresh();
         }
 
- 
-
-        private void CargarOdontogramaSeleccionado()
-        {
-            if (cmbPaciente.SelectedIndex > 0)
-            {
-                var pacienteSeleccionado = cmbPaciente.SelectedItem as ComboBoxItem;
-                CargarOdontograma(pacienteSeleccionado.Value);
-            }
-        }
 
 
         private Panel CrearPanelPrincipal()
@@ -126,14 +262,9 @@ namespace MoneyManageApp
 
            ;
 
-            Button btnAgregarObservaciones = new Button
-            {
-                Text = "Añadir Observaciones",
-                Width = 150
-            };
-            btnAgregarObservaciones.Click += (sender, e) => AbrirFormularioObservaciones();
+           
 
-            panelBotones.Controls.AddRange(new Control[] { btnGuardar, btnAgregarObservaciones });
+            panelBotones.Controls.AddRange(new Control[] { btnGuardar });
 
             panelPaciente.Controls.Add(lblNombre);
             panelPaciente.Controls.Add(cmbPaciente);
@@ -189,68 +320,6 @@ namespace MoneyManageApp
             return panelLeyenda;
         }
 
-        private void AbrirFormularioObservaciones()
-        {
-            using (Form formulario = new Form())
-            {
-                formulario.Text = "Añadir Observaciones/Especificaciones";
-                formulario.Size = new Size(400, 300);
-                formulario.StartPosition = FormStartPosition.CenterParent;
-
-                // Campos de texto para especificaciones y observaciones
-                Label lblEspecificaciones = CrearLabel("Especificaciones:", new Point(20, 20));
-                TextBox txtEspecificaciones = CrearTextBox(new Point(20, 50), 350, 80);
-
-                Label lblObservaciones = CrearLabel("Observaciones:", new Point(20, 150));
-                TextBox txtObservaciones = CrearTextBox(new Point(20, 180), 350, 50);
-
-                // Botón de guardar
-                Button btnGuardar = new Button
-                {
-                    Text = "Guardar",
-                    Location = new Point(150, 240),
-                    Width = 100
-                };
-                btnGuardar.Click += (sender, e) =>
-                {
-                    MessageBox.Show($"Especificaciones: {txtEspecificaciones.Text}\nObservaciones: {txtObservaciones.Text}",
-                        "Guardado", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    formulario.Close();
-                };
-
-                formulario.Controls.AddRange(new Control[]
-                {
-            lblEspecificaciones, txtEspecificaciones,
-            lblObservaciones, txtObservaciones,
-            btnGuardar
-                });
-
-                formulario.ShowDialog();
-            }
-        }
-
-        // Métodos auxiliares para crear controles de forma reutilizable
-        private Label CrearLabel(string texto, Point location)
-        {
-            return new Label
-            {
-                Text = texto,
-                Location = location,
-                AutoSize = true
-            };
-        }
-
-        private TextBox CrearTextBox(Point location, int width, int height)
-        {
-            return new TextBox
-            {
-                Location = location,
-                Width = width,
-                Multiline = true,
-                Height = height
-            };
-        }
-
         private void SetupBabyTeeth()
         {
             babyTeeth = new Dictionary<int, ToothControl>();
@@ -294,8 +363,6 @@ namespace MoneyManageApp
                 }
             }
         }
-
-
         public class ToothControl : UserControl
         {
             private int number;
@@ -496,46 +563,7 @@ namespace MoneyManageApp
             }
 
         }
-        private void CargarPacientes()
-        {
-            cmbPaciente.Items.Clear();
-            cmbPaciente.Items.Add("Seleccionar Paciente");
-
-            try
-            {
-                using (var connection = Database.GetConnection())
-                {
-                    connection.Open();
-                    using (var command = new SQLiteCommand(@"
-                SELECT CedulaRUC, NombreRazonSocial 
-                FROM Clientes 
-                WHERE (julianday('now') - julianday(AnioNacimiento)) / 365.25 < 14", connection))
-                    {
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                string pacienteId = reader["CedulaRUC"].ToString();
-                                string nombrePaciente = reader["NombreRazonSocial"].ToString();
-
-                                cmbPaciente.Items.Add(new ComboBoxItem(nombrePaciente, pacienteId));
-                            }
-                        }
-                    }
-                }
-
-                cmbPaciente.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar pacientes: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            // Suscribirse al evento para cargar el odontograma cuando se seleccione un paciente
-            cmbPaciente.SelectedIndexChanged += cmbPaciente_SelectedIndexChanged;
-        }
-
+      
         private void cmbPaciente_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbPaciente.SelectedIndex > 0) // Evita la opción "Seleccionar Paciente"
@@ -548,45 +576,7 @@ namespace MoneyManageApp
             }
         }
 
-        private void CargarOdontograma(string pacienteId)
-        {
-            try
-            {
-                using (var connection = Database.GetConnection())
-                {
-                    connection.Open();
-                    using (var command = new SQLiteCommand(@"
-                        SELECT DientesEstado 
-                        FROM Odontogramas 
-                        WHERE ClienteId = @ClienteId", connection))
-                    {
-                        command.Parameters.AddWithValue("@ClienteId", pacienteId);
-                        using (var reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                string dientesEstadoJson = reader["DientesEstado"].ToString();
-                                var dientesEstado = JsonConvert.DeserializeObject<Dictionary<int, string>>(dientesEstadoJson);
-
-                                foreach (var tooth in babyTeeth)
-                                {
-                                    if (dientesEstado.ContainsKey(tooth.Key))
-                                    {
-                                        tooth.Value.ActualizarEstado(dientesEstado[tooth.Key]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al cargar odontograma: {ex.Message}",
-                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
+        
         public class ComboBoxItem
         {
             public string Text { get; set; }
@@ -620,69 +610,15 @@ namespace MoneyManageApp
                 return;
             }
 
-            // Open observations form to get specs and observations
-            string especificaciones = "";
-            string observaciones = "";
-            using (Form formulario = new Form())
+            // Validate that the fields are not empty
+            string especificaciones = txtEspecificaciones.Text.Trim();
+            string observaciones = txtObservaciones.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(especificaciones) || string.IsNullOrWhiteSpace(observaciones))
             {
-                formulario.Text = "Añadir Especificaciones y Observaciones";
-                formulario.Size = new Size(400, 300);
-                formulario.StartPosition = FormStartPosition.CenterParent;
-
-                Label lblEspecificaciones = new Label
-                {
-                    Text = "Cita Actual:",
-                    Location = new Point(20, 20),
-                    AutoSize = true
-                };
-
-                TextBox txtEspecificaciones = new TextBox
-                {
-                    Location = new Point(20, 50),
-                    Width = 350,
-                    Multiline = true,
-                    Height = 80
-                };
-
-                Label lblObservaciones = new Label
-                {
-                    Text = "Proxima Cita:",
-                    Location = new Point(20, 150),
-                    AutoSize = true
-                };
-
-                TextBox txtObservaciones = new TextBox
-                {
-                    Location = new Point(20, 180),
-                    Width = 350,
-                    Multiline = true,
-                    Height = 50
-                };
-
-                Button btnGuardar = new Button
-                {
-                    Text = "Guardar",
-                    Location = new Point(150, 240),
-                    Width = 100,
-                    DialogResult = DialogResult.OK
-                };
-
-                formulario.Controls.AddRange(new Control[]
-                {
-            lblEspecificaciones, txtEspecificaciones,
-            lblObservaciones, txtObservaciones,
-            btnGuardar
-                });
-
-                if (formulario.ShowDialog() == DialogResult.OK)
-                {
-                    especificaciones = txtEspecificaciones.Text;
-                    observaciones = txtObservaciones.Text;
-                }
-                else
-                {
-                    return; // User cancelled
-                }
+                MessageBox.Show("Debe llenar todos los campos de especificaciones y observaciones",
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
             // Prepare tooth states dictionary
@@ -712,7 +648,6 @@ namespace MoneyManageApp
 
                             if (existingRecord != null)
                             {
-                                // Update existing record
                                 command.CommandText = @"
                             UPDATE Odontogramas 
                             SET FechaRegistro = @FechaRegistro, 
@@ -723,14 +658,12 @@ namespace MoneyManageApp
                             }
                             else
                             {
-                                // Insert new record
                                 command.CommandText = @"
                             INSERT INTO Odontogramas 
                             (ClienteId, FechaRegistro, DientesEstado, Especificaciones, Observaciones) 
                             VALUES (@ClienteId, @FechaRegistro, @DientesEstado, @Especificaciones, @Observaciones)";
                             }
 
-                            // Add parameters
                             command.Parameters.AddWithValue("@FechaRegistro", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                             command.Parameters.AddWithValue("@DientesEstado", dientesEstadoJson);
                             command.Parameters.AddWithValue("@Especificaciones", especificaciones);
@@ -742,16 +675,16 @@ namespace MoneyManageApp
                     }
                 }
 
-                MessageBox.Show("Odontograma guardado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Odontograma guardado exitosamente", "Éxito",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al guardar odontograma: {ex.Message}",
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
+        }   
 
-       
 
     }
 }

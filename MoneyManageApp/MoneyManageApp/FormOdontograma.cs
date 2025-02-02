@@ -22,6 +22,7 @@ namespace MoneyManageApp
         private Panel panelLeyenda;
         private string state;
         private Button btnOdontogramaKid;
+        private Button btnFotos;
 
         public FormOdontograma()
         {
@@ -170,7 +171,7 @@ namespace MoneyManageApp
             btnLimpiar = new Button
             {
                 Text = "Limpiar",
-                Location = new Point(640, 15),
+                Location = new Point(640, 15),  // 530 + 100 + 10
                 Width = 100,
                 Height = 30,
                 BackColor = Color.FromArgb(59, 130, 246),
@@ -179,11 +180,10 @@ namespace MoneyManageApp
             };
             btnLimpiar.Click += BtnLimpiar_Click;
 
-
             btnOdontogramaKid = new Button
             {
                 Text = "Pediátrico",
-                Location = new Point(750, 15),
+                Location = new Point(750, 15),  // 640 + 100 + 10
                 Width = 100,
                 Height = 30,
                 BackColor = Color.FromArgb(59, 130, 246),
@@ -191,6 +191,20 @@ namespace MoneyManageApp
                 FlatStyle = FlatStyle.Flat
             };
             btnOdontogramaKid.Click += BtnOdontogramaKid_Click;
+
+            // New Fotos button
+            btnFotos = new Button
+            {
+                Text = "Fotos",
+                Location = new Point(860, 15),  // 750 + 100 + 10
+                Width = 100,
+                Height = 30,
+                BackColor = Color.FromArgb(59, 130, 246),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            btnFotos.Click += BtnFotos_Click;
+
 
             // Create and setup legend panel
             panelLeyenda = new Panel
@@ -248,32 +262,16 @@ namespace MoneyManageApp
             });
 
             panelSuperior.Controls.AddRange(new Control[] {
-                lblPaciente, txtBuscar, btnBuscar, cmbPaciente,
-                btnGuardar, btnLimpiar, btnOdontogramaKid,
-            });
+        lblPaciente, txtBuscar, btnBuscar, cmbPaciente,
+        btnGuardar, btnLimpiar, btnOdontogramaKid, btnFotos
+    });
 
             this.Controls.AddRange(new Control[] {
-                panelOdontograma,
-                panelSuperior,
-                panelNotas,
-                panelLeyenda
+            panelOdontograma,
+            panelSuperior,
+            panelNotas,
+            panelLeyenda
             });
-        }
-
-        private void AddKidsOdontogram()
-        {
-            // Create an instance of KidsOdontogram
-            var kidsOdontogram = new KidsOdontogram();
-
-            // Set the KidsOdontogram to be a child of the panel
-            kidsOdontogram.TopLevel = false;
-            kidsOdontogram.Dock = DockStyle.Fill;
-
-            // Add the KidsOdontogram to the panelOdontograma
-            panelOdontograma.Controls.Add(kidsOdontogram);
-
-            // Show the KidsOdontogram
-            kidsOdontogram.Show();
         }
 
         private void CreateLegend()
@@ -342,6 +340,13 @@ namespace MoneyManageApp
             MessageBox.Show("No se encontró ningún paciente con ese criterio de búsqueda.",
                 "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+        private void BtnFotos_Click(object sender, EventArgs e)
+        {
+            FormFotos formFotos = new FormFotos();
+            formFotos.Show(); // Muestra la ventana sin bloquear la actual
+                              // Si quieres que sea modal (bloquee la actual), usa formFotos.ShowDialog();
+        }
+
 
         private void CargarPacientes()
         {
