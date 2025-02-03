@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\moneymanageapp\\formcitas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|c:\\users\\usuario\\documents\\github\\contabilidad\\moneymanageapp\\moneymanageapp\\formcitas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formcitas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|c:\\users\\usuario\\documents\\github\\contabilidad\\moneymanageapp\\moneymanageapp\\formmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\moneymanageapp\\formmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{62E4BD70-D0EE-4813-B76E-5175B632A50C}|MoneyManageApp\\MoneyManageApp.csproj|solutionrelative:moneymanageapp\\formmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -76,7 +76,7 @@
               "RelativeDocumentMoniker": "MoneyManageApp\\FormCitas.cs",
               "ToolTip": "C:\\Users\\Usuario\\Documents\\GitHub\\contabilidad\\MoneyManageApp\\MoneyManageApp\\FormCitas.cs",
               "RelativeToolTip": "MoneyManageApp\\FormCitas.cs",
-              "ViewState": "AQIAAA8BAAAAAAAAAAAxwDsBAAAJAAAA",
+              "ViewState": "AQIAABABAAAAAAAAAAAAABwBAAARAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-20T03:01:22.25Z",
               "IsPinned": true,
@@ -216,8 +216,7 @@
               "RelativeToolTip": "MoneyManageApp\\FormMenu.cs",
               "ViewState": "AQIAABoBAAAAAAAAAIA1wC4BAAAzAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-06T21:23:39.773Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-06T21:23:39.773Z"
             },
             {
               "$type": "Document",
