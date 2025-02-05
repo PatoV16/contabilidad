@@ -55,7 +55,7 @@ namespace MoneyManageApp
             int spacing = 65;
 
             // Cliente
-            Label lblCliente = new Label { Text = "Cliente", Location = new Point(0, yPos) };
+            Label lblCliente = new Label { Text = "Paciente", Location = new Point(0, yPos) };
             labelStyle(lblCliente);
 
             cmbCliente = new ComboBox
@@ -69,7 +69,7 @@ namespace MoneyManageApp
 
             // Artículo
             yPos += spacing;
-            Label lblArticulo = new Label { Text = "Artículo", Location = new Point(0, yPos) };
+            Label lblArticulo = new Label { Text = "Tratamiento", Location = new Point(0, yPos) };
             labelStyle(lblArticulo);
 
             txtArticulo = new TextBox
@@ -214,7 +214,7 @@ namespace MoneyManageApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al cargar los clientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Error al cargar los pacientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

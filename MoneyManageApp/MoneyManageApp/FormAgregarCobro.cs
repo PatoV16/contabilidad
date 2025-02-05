@@ -48,7 +48,7 @@ public partial class FormAgregarCobro : Form
         });
 
         // Cliente ComboBox
-        Label lblCliente = new Label { Text = "Cliente", Location = new Point(0, 10) };
+        Label lblCliente = new Label { Text = "Paciente", Location = new Point(0, 10) };
         labelStyle(lblCliente);
 
         cmbCliente = new ComboBox
@@ -163,7 +163,7 @@ public partial class FormAgregarCobro : Form
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error al cargar los clientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("Error al cargar los pacientes: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
