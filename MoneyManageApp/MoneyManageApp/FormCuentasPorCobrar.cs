@@ -22,7 +22,92 @@ namespace MoneyManageApp
         {
             InitializeComponent();
             LoadData();
+            ConfigureDataGridViewColumns();
         }
+
+        private void ConfigureDataGridViewColumns()
+        {
+            // Configurar títulos para las columnas de Cuentas por Cobrar
+            dgvCuentasPorCobrar.Columns["Cliente"].HeaderText = "Paciente";
+            dgvCuentasPorCobrar.Columns["Articulo"].HeaderText = "Tratamiento";
+            dgvCuentasPorCobrar.Columns["ValorCredito"].HeaderText = "Valor Crédito";
+            dgvCuentasPorCobrar.Columns["FechaInicial"].HeaderText = "Fecha Inicial";
+            dgvCuentasPorCobrar.Columns["SaldoCuenta"].HeaderText = "Saldo Cuenta";
+            dgvCuentasPorCobrar.Columns["FechaFinal"].HeaderText = "Fecha Final";
+            dgvCuentasPorCobrar.Columns["Estado"].HeaderText = "Estado";
+
+            // Hacer la columna SaldoCuenta editable
+            dgvCuentasPorCobrar.Columns["SaldoCuenta"].ReadOnly = false;
+
+            // Configurar títulos para las columnas de Recaudos Diarios
+            dgvRecaudosDiarios.Columns["RecaudoDiario"].HeaderText = "Recaudo Diario";
+            dgvRecaudosDiarios.Columns["FechaCobro"].HeaderText = "Fecha Cobro";
+            dgvRecaudosDiarios.Columns["NombreCliente"].HeaderText = "Nombre Cliente";
+            dgvRecaudosDiarios.Columns["Concepto"].HeaderText = "Concepto";
+
+            // Agregar evento para guardar cambios en el saldo
+            dgvCuentasPorCobrar.CellEndEdit += DgvCuentasPorCobrar_CellEndEdit;
+        }
+
+        private void DgvCuentasPorCobrar_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == dgvCuentasPorCobrar.Columns["SaldoCuenta"].Index)
+            {
+                try
+                {
+                    // Obtener los valores de las columnas que identifican el registro
+                    object clienteValue = dgvCuentasPorCobrar.Rows[e.RowIndex].Cells["Cliente"].Value;
+                    object articuloValue = dgvCuentasPorCobrar.Rows[e.RowIndex].Cells["Articulo"].Value;
+                    object fechaInicialValue = dgvCuentasPorCobrar.Rows[e.RowIndex].Cells["FechaInicial"].Value;
+                    object saldoValue = dgvCuentasPorCobrar.Rows[e.RowIndex].Cells["SaldoCuenta"].Value;
+
+                    // Validar que los valores no sean nulos
+                    if (clienteValue == null || articuloValue == null || fechaInicialValue == null || saldoValue == null)
+                    {
+                        MessageBox.Show("Error: No se pueden obtener los valores necesarios para identificar el registro.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Convertir valores
+                    decimal nuevoSaldo;
+                    if (!decimal.TryParse(saldoValue.ToString(), out nuevoSaldo))
+                    {
+                        MessageBox.Show("Error: El saldo ingresado no es válido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Actualizar en la base de datos usando las columnas identificadoras
+                    using (SQLiteConnection conn = Database.GetConnection())
+                    {
+                        conn.Open();
+                        string updateQuery = @"
+                    UPDATE CuentasPorCobrar 
+                    SET SaldoCuenta = @Saldo 
+                    WHERE Cliente = @Cliente 
+                      AND Articulo = @Articulo 
+                      AND FechaInicial = @FechaInicial";
+
+                        using (SQLiteCommand cmd = new SQLiteCommand(updateQuery, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@Saldo", nuevoSaldo);
+                            cmd.Parameters.AddWithValue("@Cliente", clienteValue.ToString());
+                            cmd.Parameters.AddWithValue("@Articulo", articuloValue.ToString());
+                            cmd.Parameters.AddWithValue("@FechaInicial", fechaInicialValue.ToString());
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    MessageBox.Show("Saldo actualizado correctamente", "Actualización Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al actualizar el saldo: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Recargar los datos para deshacer el cambio
+                    LoadData();
+                }
+            }
+        }
+
 
         private void InitializeComponent()
         {
@@ -48,7 +133,7 @@ namespace MoneyManageApp
                 AllowUserToAddRows = false,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 MultiSelect = false,
-                ReadOnly = true
+                ReadOnly = false
             };
 
             dgvRecaudosDiarios = new DataGridView

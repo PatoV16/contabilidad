@@ -26,7 +26,7 @@ namespace MoneyManageApp
         {
             this.Size = new Size(400, 400);
             this.StartPosition = FormStartPosition.CenterParent;
-            this.Text = "Agregar Cliente";
+            this.Text = "Agregar Paciente";
 
             TableLayoutPanel panel = new TableLayoutPanel
             {
